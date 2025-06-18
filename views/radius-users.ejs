@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'radius-users' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h1 class="table-title">RADIUS Users Management</h1>
+                    <a href="/radius-users/add" class="btn btn-success">Tambah RADIUS User</a>
+                </div>
+                
+                <!-- Search Form -->
+                <div style="margin-bottom: 1.5rem;">
+                    <form action="/radius-users" method="GET" style="display: flex; gap: 1rem; align-items: center;">
+                        <input type="text" name="search" placeholder="Cari username..." 
+                               value="<%= search %>" class="form-input" style="max-width: 300px;">
+                        <button type="submit" class="btn btn-secondary btn-sm">Cari</button>
+                        <% if (search) { %>
+                        <a href="/radius-users" class="btn btn-secondary btn-sm">Reset</a>
+                        <% } %>
+                    </form>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Dibuat</th>
+                            <th>Diperbarui</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(function(userItem) { %>
+                        <tr>
+                            <td><strong><%= userItem.username %></strong></td>
+                            <td>
+                                <code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">
+                                    <%= userItem.password ? '••••••••' : 'No password' %>
+                                </code>
+                            </td>
+                            <td>
+                                <% if (userItem.created_at) { %>
+                                    <%= new Date(userItem.created_at).toLocaleDateString('id-ID') %>
+                                <% } else { %>
+                                    <span style="color: #6b7280;">-</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (userItem.updated_at) { %>
+                                    <%= new Date(userItem.updated_at).toLocaleDateString('id-ID') %>
+                                <% } else { %>
+                                    <span style="color: #6b7280;">-</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a href="/radius-users/<%= userItem.username %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                                    <form action="/radius-users/<%= userItem.username %>/delete" method="POST" style="display: inline;" 
+                                          onsubmit="return confirm('Apakah Anda yakin ingin menghapus user <%= userItem.username %>?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                        
+                        <% if (users.length === 0) { %>
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #6b7280; padding: 2rem;">
+                                <% if (search) { %>
+                                    Tidak ada user ditemukan untuk pencarian "<%= search %>"
+                                <% } else { %>
+                                    Belum ada RADIUS user yang terdaftar
+                                <% } %>
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+                
+                <!-- Pagination -->
+                <% if (pagination.total > 1) { %>
+                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
+                    <% if (pagination.hasPrev) { %>
+                    <a href="?page=<%= pagination.current - 1 %><%= search ? '&search=' + encodeURIComponent(search) : '' %>" 
+                       class="btn btn-secondary btn-sm">← Previous</a>
+                    <% } %>
+                    
+                    <span style="padding: 0.5rem 1rem; color: #6b7280;">
+                        Page <%= pagination.current %> of <%= pagination.total %>
+                    </span>
+                    
+                    <% if (pagination.hasNext) { %>
+                    <a href="?page=<%= pagination.current + 1 %><%= search ? '&search=' + encodeURIComponent(search) : '' %>" 
+                       class="btn btn-secondary btn-sm">Next →</a>
+                    <% } %>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

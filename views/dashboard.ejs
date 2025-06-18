@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'dashboard' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Dashboard</h1>
+                <p class="dashboard-subtitle">Selamat datang di RADIUS Server Management System</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Total Admin Users</div>
+                    <div class="stat-value"><%= stats.userCount %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Server Status</div>
+                    <div class="stat-value" style="color: #059669;">Running</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Last Login</div>
+                    <div class="stat-value" style="font-size: 1rem;">Just now</div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h2 class="table-title">Quick Actions</h2>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <a href="/radius-users" class="btn btn-primary">Kelola RADIUS Users</a>
+                    <a href="/radius-users/add" class="btn btn-success">Tambah RADIUS User</a>
+                    <% if (user.is_super_admin) { %>
+                    <a href="/users" class="btn btn-secondary">Kelola Admin Users</a>
+                    <a href="/users/add" class="btn btn-secondary">Tambah Admin User</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

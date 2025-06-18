@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'users' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h1 class="table-title">Manajemen Users</h1>
+                    <a href="/users/add" class="btn btn-success">Tambah User</a>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>API Key</th>
+                            <th>Super Admin</th>
+                            <th>Dibuat</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(function(userItem) { %>
+                        <tr>
+                            <td><%= userItem.id %></td>
+                            <td><%= userItem.username %></td>
+                            <td><%= userItem.email %></td>
+                            <td>
+                                <% if (userItem.api_key) { %>
+                                    <span style="font-family: monospace; font-size: 0.8rem; color: #059669;">
+                                        <%= userItem.api_key.substring(0, 16) %>...
+                                    </span>
+                                    <br>
+                                    <form action="/users/<%= userItem.id %>/revoke-api-key" method="POST" style="display: inline; margin-top: 4px;">
+                                        <button type="submit" class="btn btn-warning btn-xs" onclick="return confirm('Revoke API key untuk user ini?')">Revoke</button>
+                                    </form>
+                                <% } else { %>
+                                    <span style="color: #6b7280; font-size: 0.8rem;">No API Key</span>
+                                    <br>
+                                    <form action="/users/<%= userItem.id %>/generate-api-key" method="POST" style="display: inline; margin-top: 4px;">
+                                        <button type="submit" class="btn btn-success btn-xs">Generate</button>
+                                    </form>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if (userItem.is_super_admin) { %>
+                                    <span style="color: #059669; font-weight: 500;">Ya</span>
+                                <% } else { %>
+                                    <span style="color: #6b7280;">Tidak</span>
+                                <% } %>
+                            </td>
+                            <td><%= new Date(userItem.created_at).toLocaleDateString('id-ID') %></td>
+                            <td>
+                                <div class="actions">
+                                    <% if (userItem.id !== user.id) { %>
+                                    <form action="/users/<%= userItem.id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                    <% } else { %>
+                                    <span style="color: #6b7280; font-size: 0.8rem;">Current User</span>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                        
+                        <% if (users.length === 0) { %>
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #6b7280;">
+                                Tidak ada user yang ditemukan
+                            </td>
+                        </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

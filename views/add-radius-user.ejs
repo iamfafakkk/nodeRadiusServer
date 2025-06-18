@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'radius-users' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h1 class="table-title">Tambah RADIUS User</h1>
+                    <a href="/radius-users" class="btn btn-secondary">Kembali</a>
+                </div>
+                
+                <form action="/radius-users/add" method="POST" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-input" 
+                               placeholder="Masukkan username untuk RADIUS user" required>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Username harus unik dan akan digunakan untuk autentikasi RADIUS
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password" class="form-input" 
+                               placeholder="Masukkan password" required>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Password minimal 4 karakter
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Konfirmasi Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" 
+                               placeholder="Ulangi password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="groupname" class="form-label">Group (Opsional)</label>
+                        <select id="groupname" name="groupname" class="form-input">
+                            <option value="">Pilih group...</option>
+                            <option value="default">Default</option>
+                            <% if (groups && groups.length > 0) { %>
+                                <% groups.forEach(function(group) { %>
+                                <option value="<%= group.groupname %>"><%= group.groupname %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Group akan menentukan atribut dan batasan yang diterapkan
+                        </small>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-success">Tambah RADIUS User</button>
+                        <a href="/radius-users" class="btn btn-secondary">Batal</a>
+                    </div>
+                </form>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border: 1px solid #0284c7;">
+                    <h4 style="color: #0284c7; margin-bottom: 0.5rem;">💡 Tips:</h4>
+                    <ul style="color: #0369a1; font-size: 0.9rem; margin: 0; padding-left: 1.5rem;">
+                        <li>Username harus unik di seluruh sistem</li>
+                        <li>Password akan disimpan sebagai cleartext untuk kompatibilitas</li>
+                        <li>User ini dapat digunakan untuk autentikasi di MikroTik atau perangkat lain</li>
+                        <li>Group menentukan bandwidth dan batasan akses</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

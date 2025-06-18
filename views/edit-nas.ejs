@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'nas' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h1 class="table-title">Edit NAS: <%= nasData.nasname %></h1>
+                    <a href="/nas" class="btn btn-secondary">Kembali</a>
+                </div>
+                
+                <form action="/nas/<%= nasData.id %>/edit" method="POST" style="max-width: 600px;">
+                    <div class="form-group">
+                        <label for="nasname" class="form-label">NAS Name (IP Address) *</label>
+                        <input type="text" id="nasname" name="nasname" class="form-input" 
+                               value="<%= nasData.nasname %>" required>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            IP address dari router/device yang akan menggunakan RADIUS
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="shortname" class="form-label">Short Name</label>
+                        <input type="text" id="shortname" name="shortname" class="form-input" 
+                               value="<%= nasData.shortname || '' %>">
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Nama pendek untuk identifikasi
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="type" class="form-label">NAS Type</label>
+                        <select id="type" name="type" class="form-input">
+                            <% nasTypes.forEach(function(type) { %>
+                            <option value="<%= type %>" <%= type === nasData.type ? 'selected' : '' %>>
+                                <%= type %>
+                            </option>
+                            <% }); %>
+                        </select>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Pilih 'mikrotik' untuk router MikroTik
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ports" class="form-label">Ports</label>
+                        <input type="number" id="ports" name="ports" class="form-input" 
+                               value="<%= nasData.ports || '' %>" placeholder="1812">
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Port untuk authentication (biasanya 1812)
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="secret" class="form-label">Shared Secret *</label>
+                        <input type="password" id="secret" name="secret" class="form-input" 
+                               value="<%= nasData.secret %>" required>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Password yang sama harus dikonfigurasi di router
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="server" class="form-label">Server</label>
+                        <input type="text" id="server" name="server" class="form-input" 
+                               value="<%= nasData.server || '' %>" placeholder="optional">
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Server field (optional)
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="community" class="form-label">Community</label>
+                        <input type="text" id="community" name="community" class="form-input" 
+                               value="<%= nasData.community || '' %>" placeholder="optional">
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            SNMP Community string (optional)
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea id="description" name="description" class="form-input" 
+                                  rows="3" placeholder="Deskripsi NAS client ini"><%= nasData.description || '' %></textarea>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Deskripsi untuk identifikasi yang lebih mudah
+                        </small>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-success">Update NAS</button>
+                        <a href="/nas" class="btn btn-secondary">Batal</a>
+                    </div>
+                </form>
+                
+                <!-- Current Status -->
+                <div style="margin-top: 2rem; padding: 1rem; background: #f9fafb; border-radius: 8px; border: 1px solid #d1d5db;">
+                    <h4 style="color: #374151; margin-bottom: 0.5rem;">📊 Status NAS:</h4>
+                    <ul style="color: #6b7280; font-size: 0.9rem; margin: 0; padding-left: 1.5rem;">
+                        <li><strong>ID:</strong> <%= nasData.id %></li>
+                        <li><strong>Dibuat:</strong> <%= nasData.created_at ? new Date(nasData.created_at).toLocaleString('id-ID') : '-' %></li>
+                        <li><strong>Diperbarui:</strong> <%= nasData.updated_at ? new Date(nasData.updated_at).toLocaleString('id-ID') : '-' %></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"address":"0.0.0.0","code":"EADDRINUSE","errno":-48,"level":"error","message":"RADIUS server error: bind EADDRINUSE 0.0.0.0:1812","port":1812,"service":"radius-auth","stack":"Error: bind EADDRINUSE 0.0.0.0:1812\n    at node:dgram:364:20\n    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)","syscall":"bind","timestamp":"2025-06-18 20:38:57"}

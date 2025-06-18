@@ -1,0 +1,205 @@
+<%- include('partials/header', { title: 'Edit Admin User' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Edit Admin User: <%= user.username %></h3>
+                    <div class="card-tools">
+                        <a href="/admin/users" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Users
+                        </a>
+                    </div>
+                </div>
+                
+                <form action="/admin/users/edit/<%= user.id %>" method="POST">
+                    <div class="card-body">
+                        <!-- Flash Messages -->
+                        <% if (typeof error !== 'undefined' && error) { %>
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <i class="icon fas fa-ban"></i> <%= error %>
+                            </div>
+                        <% } %>
+                        
+                        <% if (typeof success !== 'undefined' && success) { %>
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <i class="icon fas fa-check"></i> <%= success %>
+                            </div>
+                        <% } %>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="username">Username <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="username" name="username" 
+                                           value="<%= user.username %>" placeholder="Enter username" required>
+                                    <small class="form-text text-muted">Must be unique</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="<%= user.email || '' %>" placeholder="Enter email address">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fullname">Full Name</label>
+                                    <input type="text" class="form-control" id="fullname" name="fullname" 
+                                           value="<%= user.fullname || '' %>" placeholder="Enter full name">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="role">Role <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="role" name="role" required>
+                                        <option value="">Select Role</option>
+                                        <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Administrator</option>
+                                        <option value="operator" <%= user.role === 'operator' ? 'selected' : '' %>>Operator</option>
+                                        <option value="viewer" <%= user.role === 'viewer' ? 'selected' : '' %>>Viewer</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="password">New Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                           placeholder="Leave blank to keep current password">
+                                    <small class="form-text text-muted">Leave empty to keep current password</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="confirm_password">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                                           placeholder="Confirm new password">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_active" name="is_active" 
+                                       value="1" <%= user.is_active ? 'checked' : '' %>>
+                                <label class="form-check-label" for="is_active">
+                                    Active User
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description/Notes</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="Enter additional notes about this user"><%= user.description || '' %></textarea>
+                        </div>
+
+                        <!-- User Information -->
+                        <hr>
+                        <h5>User Information</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Created:</strong> <%= new Date(user.created_at).toLocaleString() %></p>
+                                <p><strong>Last Updated:</strong> <%= user.updated_at ? new Date(user.updated_at).toLocaleString() : 'Never' %></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Last Login:</strong> <%= user.last_login ? new Date(user.last_login).toLocaleString() : 'Never' %></p>
+                                <p><strong>Status:</strong> 
+                                    <span class="badge badge-<%= user.is_active ? 'success' : 'danger' %>">
+                                        <%= user.is_active ? 'Active' : 'Inactive' %>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update User
+                        </button>
+                        <a href="/admin/users" class="btn btn-secondary">Cancel</a>
+                        <% if (user.id !== currentUser.id) { %>
+                            <button type="button" class="btn btn-danger float-right" data-toggle="modal" data-target="#deleteModal">
+                                <i class="fas fa-trash"></i> Delete User
+                            </button>
+                        <% } %>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<% if (user.id !== currentUser.id) { %>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the user "<strong><%= user.username %></strong>"?</p>
+                <p class="text-danger"><strong>Warning:</strong> This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form action="/admin/users/delete/<%= user.id %>" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<% } %>
+
+<script>
+$(document).ready(function() {
+    // Password confirmation validation
+    $('#confirm_password').on('keyup', function() {
+        const password = $('#password').val();
+        const confirmPassword = $(this).val();
+        
+        if (password && confirmPassword && password !== confirmPassword) {
+            $(this).addClass('is-invalid');
+            if (!$(this).next('.invalid-feedback').length) {
+                $(this).after('<div class="invalid-feedback">Passwords do not match</div>');
+            }
+        } else {
+            $(this).removeClass('is-invalid');
+            $(this).next('.invalid-feedback').remove();
+        }
+    });
+    
+    // Form validation
+    $('form').on('submit', function(e) {
+        const password = $('#password').val();
+        const confirmPassword = $('#confirm_password').val();
+        
+        if (password && password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+            return false;
+        }
+    });
+});
+</script>
+
+<%- include('partials/footer') %>

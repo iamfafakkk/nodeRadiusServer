@@ -1,0 +1,194 @@
+<%- include('partials/header', { title: 'Edit Group' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Edit Group: <%= group.groupname %></h3>
+                    <div class="card-tools">
+                        <a href="/groups" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Groups
+                        </a>
+                    </div>
+                </div>
+                
+                <form action="/groups/<%= group.groupname %>/edit" method="POST">
+                    <div class="card-body">
+                        <!-- Flash Messages -->
+                        <% if (typeof error !== 'undefined' && error) { %>
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <i class="icon fas fa-ban"></i> <%= error %>
+                            </div>
+                        <% } %>
+                        
+                        <% if (typeof success !== 'undefined' && success) { %>
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <i class="icon fas fa-check"></i> <%= success %>
+                            </div>
+                        <% } %>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="groupname">Group Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="groupname" name="groupname" 
+                                           value="<%= group.groupname %>" placeholder="Enter group name" required>
+                                    <small class="form-text text-muted">Unique identifier for the group</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="priority">Priority</label>
+                                    <input type="number" class="form-control" id="priority" name="priority" 
+                                           value="<%= group.priority || '' %>" placeholder="Enter priority (optional)" min="1" max="100">
+                                    <small class="form-text text-muted">Higher numbers = higher priority (1-100)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="Enter group description (optional)"><%= group.description || '' %></textarea>
+                        </div>
+
+                        <hr>
+                        <h5>Group Attributes</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="session_timeout">Session Timeout (seconds)</label>
+                                    <input type="number" class="form-control" id="session_timeout" name="session_timeout" 
+                                           value="<%= group.session_timeout || '' %>" placeholder="e.g., 3600" min="60">
+                                    <small class="form-text text-muted">Maximum session duration</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="idle_timeout">Idle Timeout (seconds)</label>
+                                    <input type="number" class="form-control" id="idle_timeout" name="idle_timeout" 
+                                           value="<%= group.idle_timeout || '' %>" placeholder="e.g., 1800" min="60">
+                                    <small class="form-text text-muted">Maximum idle time</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="max_daily_session">Max Daily Session (seconds)</label>
+                                    <input type="number" class="form-control" id="max_daily_session" name="max_daily_session" 
+                                           value="<%= group.max_daily_session || '' %>" placeholder="e.g., 28800" min="60">
+                                    <small class="form-text text-muted">Maximum session time per day</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="max_monthly_session">Max Monthly Session (seconds)</label>
+                                    <input type="number" class="form-control" id="max_monthly_session" name="max_monthly_session" 
+                                           value="<%= group.max_monthly_session || '' %>" placeholder="e.g., 864000" min="60">
+                                    <small class="form-text text-muted">Maximum session time per month</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="download_limit">Download Limit (bytes)</label>
+                                    <input type="number" class="form-control" id="download_limit" name="download_limit" 
+                                           value="<%= group.download_limit || '' %>" placeholder="e.g., 1073741824" min="0">
+                                    <small class="form-text text-muted">Maximum download per session</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="upload_limit">Upload Limit (bytes)</label>
+                                    <input type="number" class="form-control" id="upload_limit" name="upload_limit" 
+                                           value="<%= group.upload_limit || '' %>" placeholder="e.g., 1073741824" min="0">
+                                    <small class="form-text text-muted">Maximum upload per session</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="download_rate">Download Rate (bps)</label>
+                                    <input type="number" class="form-control" id="download_rate" name="download_rate" 
+                                           value="<%= group.download_rate || '' %>" placeholder="e.g., 1048576" min="0">
+                                    <small class="form-text text-muted">Download speed limit</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="upload_rate">Upload Rate (bps)</label>
+                                    <input type="number" class="form-control" id="upload_rate" name="upload_rate" 
+                                           value="<%= group.upload_rate || '' %>" placeholder="e.g., 1048576" min="0">
+                                    <small class="form-text text-muted">Upload speed limit</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_active" name="is_active" 
+                                       value="1" <%= group.is_active ? 'checked' : '' %>>
+                                <label class="form-check-label" for="is_active">
+                                    Active Group
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Group
+                        </button>
+                        <a href="/groups" class="btn btn-secondary">Cancel</a>
+                        <button type="button" class="btn btn-danger float-right" data-toggle="modal" data-target="#deleteModal">
+                            <i class="fas fa-trash"></i> Delete Group
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the group "<strong><%= group.groupname %></strong>"?</p>
+                <p class="text-danger"><strong>Warning:</strong> This action cannot be undone. All users assigned to this group will be affected.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form action="/groups/<%= group.groupname %>/delete" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Group
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

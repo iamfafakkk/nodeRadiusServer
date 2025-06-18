@@ -1,0 +1,298 @@
+{"address":"0.0.0.0","code":"EADDRINUSE","errno":-48,"level":"error","message":"RADIUS server error: bind EADDRINUSE 0.0.0.0:1812","port":1812,"service":"radius-auth","stack":"Error: bind EADDRINUSE 0.0.0.0:1812\n    at node:dgram:364:20\n    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)","syscall":"bind","timestamp":"2025-06-18 20:38:57"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:39:16"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:39:16"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:40:41"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:40:41"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:42:19"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:42:19"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:42:28"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:42:28"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:43:31"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:43:31"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:44:32"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:44:32"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:45:41"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:45:41"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:53:17"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:53:18"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:55:50"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:55:50"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:56:20"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:56:20"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:57:04"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:57:04"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:57:27"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:57:27"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:58:26"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:58:26"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:58:54"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:58:54"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:59:03"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:59:03"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 20:59:20"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 20:59:20"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:08:42"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:08:42"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:13:54"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:13:54"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:21:23"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:21:23"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:23:16"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:23:16"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:23:29"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:23:29"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:23:39"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:23:39"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:23:46"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:23:46"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:24:33"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:24:33"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:24:40"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:24:40"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:25:05"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:25:05"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:25:53"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:25:53"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:26:02"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:26:02"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:26:11"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:26:11"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:26:24"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:26:24"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:26:37"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:26:37"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:26:53"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:26:53"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:27:29"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:27:29"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:27:35"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:27:35"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:27:42"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:27:42"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:27:49"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:27:49"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:27:55"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:27:55"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:28:02"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:28:02"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:28:08"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:28:08"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:28:20"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:28:20"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:28:27"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:28:27"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:30:37"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:30:37"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:30:58"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:30:58"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:33:01"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:33:01"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:33:09"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:33:09"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:33:14"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:33:14"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:33:46"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:33:46"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:34:03"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:34:03"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:34:19"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:34:19"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:34:31"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:34:31"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:34:51"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:34:51"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:35:10"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:35:10"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:35:23"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:35:23"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:35:36"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:35:36"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:35:43"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:35:43"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:36:00"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:36:00"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:37:33"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:37:33"}
+{"attributes":{"Acct-Session-Id":"810000dc","Called-Station-Id":"JPW-2099","Calling-Station-Id":"64:D1:54:C1:74:6C","Framed-Protocol":"PPP","NAS-IP-Address":"172.16.4.1","NAS-Identifier":"DEKSTOP","NAS-Port":15728861,"NAS-Port-Id":"bridge1","NAS-Port-Type":"Ethernet","Service-Type":"Framed-User","User-Name":"radius","User-Password":"radius"},"code":"Access-Request","from":"172.16.4.1:58321","identifier":173,"level":"info","message":"Received packet:","service":"radius-auth","timestamp":"2025-06-18 21:38:26"}
+{"allAttributes":["Service-Type","Framed-Protocol","NAS-Port","NAS-Port-Type","User-Name","Calling-Station-Id","Called-Station-Id","NAS-Port-Id","Acct-Session-Id","User-Password","NAS-Identifier","NAS-IP-Address"],"authType":"PAP","identifier":173,"level":"info","message":"Access-Request received:","nasIp":"172.16.4.1","nasPort":15728861,"service":"radius-auth","timestamp":"2025-06-18 21:38:26","username":"radius"}
+{"level":"info","match":true,"message":"PAP Authentication attempt:","providedPassword":"radius","service":"radius-auth","storedPassword":"radius","timestamp":"2025-06-18 21:38:26","username":"radius"}
+{"level":"info","message":"Authentication successful:","nasIp":"172.16.4.1","nasPort":15728861,"service":"radius-auth","timestamp":"2025-06-18 21:38:26","username":"radius"}
+{"level":"info","message":"Access-Accept sent to 172.16.4.1:58321","service":"radius-auth","timestamp":"2025-06-18 21:38:26"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:43:16"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:43:16"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:44:42"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:44:43"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:45:24"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:45:24"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:45:31"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:45:31"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:45:40"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:45:40"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:48:10"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:48:10"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:49:00"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:49:00"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:49:16"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:49:16"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:49:29"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:49:29"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:53:10"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:53:10"}
+{"attributes":{"Acct-Session-Id":"810000dd","Called-Station-Id":"JPW-2099","Calling-Station-Id":"64:D1:54:C1:74:6C","Framed-Protocol":"PPP","NAS-IP-Address":"172.16.4.1","NAS-Identifier":"DEKSTOP","NAS-Port":15728862,"NAS-Port-Id":"bridge1","NAS-Port-Type":"Ethernet","Service-Type":"Framed-User","User-Name":"radius","User-Password":"radius"},"code":"Access-Request","from":"172.16.4.1:37297","identifier":178,"level":"info","message":"Received packet:","service":"radius-auth","timestamp":"2025-06-18 21:55:47"}
+{"allAttributes":["Service-Type","Framed-Protocol","NAS-Port","NAS-Port-Type","User-Name","Calling-Station-Id","Called-Station-Id","NAS-Port-Id","Acct-Session-Id","User-Password","NAS-Identifier","NAS-IP-Address"],"authType":"PAP","identifier":178,"level":"info","message":"Access-Request received:","nasIp":"172.16.4.1","nasPort":15728862,"service":"radius-auth","sessionId":"810000dd","timestamp":"2025-06-18 21:55:47","username":"radius"}
+{"level":"info","match":true,"message":"PAP Authentication attempt:","providedPassword":"radius","service":"radius-auth","storedPassword":"radius","timestamp":"2025-06-18 21:55:47","username":"radius"}
+{"level":"info","message":"Authentication successful:","nasIp":"172.16.4.1","nasPort":15728862,"service":"radius-auth","sessionId":"810000dd","timestamp":"2025-06-18 21:55:47","username":"radius"}
+{"level":"info","message":"Access-Accept sent to 172.16.4.1:37297","service":"radius-auth","timestamp":"2025-06-18 21:55:47"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:56:25"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:56:25"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:56:39"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:56:39"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 21:57:55"}
+{"attributes":{"Acct-Session-Id":"810000de","Called-Station-Id":"JPW-2099","Calling-Station-Id":"64:D1:54:C1:74:6C","Framed-Protocol":"PPP","NAS-IP-Address":"172.16.4.1","NAS-Identifier":"DEKSTOP","NAS-Port":15728863,"NAS-Port-Id":"bridge1","NAS-Port-Type":"Ethernet","Service-Type":"Framed-User","User-Name":"radius","User-Password":"radius"},"code":"Access-Request","from":"172.16.4.1:59926","identifier":183,"level":"info","message":"Received packet:","service":"radius-auth","timestamp":"2025-06-18 21:58:11"}
+{"allAttributes":["Service-Type","Framed-Protocol","NAS-Port","NAS-Port-Type","User-Name","Calling-Station-Id","Called-Station-Id","NAS-Port-Id","Acct-Session-Id","User-Password","NAS-Identifier","NAS-IP-Address"],"authType":"PAP","identifier":183,"level":"info","message":"Access-Request received:","nasIp":"172.16.4.1","nasPort":15728863,"service":"radius-auth","sessionId":"810000de","timestamp":"2025-06-18 21:58:11","username":"radius"}
+{"level":"info","match":true,"message":"PAP Authentication attempt:","providedPassword":"radius","service":"radius-auth","storedPassword":"radius","timestamp":"2025-06-18 21:58:11","username":"radius"}
+{"level":"info","message":"Authentication successful:","nasIp":"172.16.4.1","nasPort":15728863,"service":"radius-auth","sessionId":"810000de","timestamp":"2025-06-18 21:58:11","username":"radius"}
+{"level":"info","message":"Access-Accept sent to 172.16.4.1:59926","service":"radius-auth","timestamp":"2025-06-18 21:58:11"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 21:59:39"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 21:59:39"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 21:59:43"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:01:40"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:01:40"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:01:43"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:02:08"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:02:08"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:02:12"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:02:52"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:02:52"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:02:55"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:04:17"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:04:17"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:04:20"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:04:43"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:04:43"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:04:47"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:04:56"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:04:56"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:05:00"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:06:31"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:06:39"}
+{"attributes":{"Acct-Session-Id":"810000df","Called-Station-Id":"JPW-2099","Calling-Station-Id":"64:D1:54:C1:74:6C","Framed-Protocol":"PPP","NAS-IP-Address":"172.16.4.1","NAS-Identifier":"DEKSTOP","NAS-Port":15728864,"NAS-Port-Id":"bridge1","NAS-Port-Type":"Ethernet","Service-Type":"Framed-User","User-Name":"radius","User-Password":"radius"},"code":"Access-Request","from":"172.16.4.1:40075","identifier":188,"level":"info","message":"Received packet:","service":"radius-auth","timestamp":"2025-06-18 22:06:51"}
+{"allAttributes":["Service-Type","Framed-Protocol","NAS-Port","NAS-Port-Type","User-Name","Calling-Station-Id","Called-Station-Id","NAS-Port-Id","Acct-Session-Id","User-Password","NAS-Identifier","NAS-IP-Address"],"authType":"PAP","identifier":188,"level":"info","message":"Access-Request received:","nasIp":"172.16.4.1","nasPort":15728864,"service":"radius-auth","sessionId":"810000df","timestamp":"2025-06-18 22:06:51","username":"radius"}
+{"level":"info","match":true,"message":"PAP Authentication attempt:","providedPassword":"radius","service":"radius-auth","storedPassword":"radius","timestamp":"2025-06-18 22:06:51","username":"radius"}
+{"level":"info","message":"Authentication successful:","nasIp":"172.16.4.1","nasPort":15728864,"service":"radius-auth","sessionId":"810000df","timestamp":"2025-06-18 22:06:51","username":"radius"}
+{"level":"info","message":"Access-Accept sent to 172.16.4.1:40075","service":"radius-auth","timestamp":"2025-06-18 22:06:51"}
+{"attributes":{"Acct-Session-Id":"810000e0","Called-Station-Id":"JPW-2099","Calling-Station-Id":"64:D1:54:C1:74:6C","Framed-Protocol":"PPP","NAS-IP-Address":"172.16.4.1","NAS-Identifier":"DEKSTOP","NAS-Port":15728865,"NAS-Port-Id":"bridge1","NAS-Port-Type":"Ethernet","Service-Type":"Framed-User","User-Name":"radius","User-Password":"radius"},"code":"Access-Request","from":"172.16.4.1:55048","identifier":193,"level":"info","message":"Received packet:","service":"radius-auth","timestamp":"2025-06-18 22:06:57"}
+{"allAttributes":["Service-Type","Framed-Protocol","NAS-Port","NAS-Port-Type","User-Name","Calling-Station-Id","Called-Station-Id","NAS-Port-Id","Acct-Session-Id","User-Password","NAS-Identifier","NAS-IP-Address"],"authType":"PAP","identifier":193,"level":"info","message":"Access-Request received:","nasIp":"172.16.4.1","nasPort":15728865,"service":"radius-auth","sessionId":"810000e0","timestamp":"2025-06-18 22:06:57","username":"radius"}
+{"level":"info","match":true,"message":"PAP Authentication attempt:","providedPassword":"radius","service":"radius-auth","storedPassword":"radius","timestamp":"2025-06-18 22:06:57","username":"radius"}
+{"level":"info","message":"Authentication successful:","nasIp":"172.16.4.1","nasPort":15728865,"service":"radius-auth","sessionId":"810000e0","timestamp":"2025-06-18 22:06:57","username":"radius"}
+{"level":"info","message":"Access-Accept sent to 172.16.4.1:55048","service":"radius-auth","timestamp":"2025-06-18 22:06:57"}
+{"attributes":{"Acct-Session-Id":"810000e1","Called-Station-Id":"JPW-2099","Calling-Station-Id":"64:D1:54:C1:74:6C","Framed-Protocol":"PPP","NAS-IP-Address":"172.16.4.1","NAS-Identifier":"DEKSTOP","NAS-Port":15728866,"NAS-Port-Id":"bridge1","NAS-Port-Type":"Ethernet","Service-Type":"Framed-User","User-Name":"radius","User-Password":"radius"},"code":"Access-Request","from":"172.16.4.1:49175","identifier":198,"level":"info","message":"Received packet:","service":"radius-auth","timestamp":"2025-06-18 22:07:11"}
+{"allAttributes":["Service-Type","Framed-Protocol","NAS-Port","NAS-Port-Type","User-Name","Calling-Station-Id","Called-Station-Id","NAS-Port-Id","Acct-Session-Id","User-Password","NAS-Identifier","NAS-IP-Address"],"authType":"PAP","identifier":198,"level":"info","message":"Access-Request received:","nasIp":"172.16.4.1","nasPort":15728866,"service":"radius-auth","sessionId":"810000e1","timestamp":"2025-06-18 22:07:11","username":"radius"}
+{"level":"info","match":true,"message":"PAP Authentication attempt:","providedPassword":"radius","service":"radius-auth","storedPassword":"radius","timestamp":"2025-06-18 22:07:11","username":"radius"}
+{"level":"info","message":"Authentication successful:","nasIp":"172.16.4.1","nasPort":15728866,"service":"radius-auth","sessionId":"810000e1","timestamp":"2025-06-18 22:07:11","username":"radius"}
+{"level":"info","message":"Access-Accept sent to 172.16.4.1:49175","service":"radius-auth","timestamp":"2025-06-18 22:07:11"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:07:21"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:07:26"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:07:30"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:07:57"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:07:57"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:09:20"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:09:20"}
+{"level":"info","message":"RADIUS server listening on 0.0.0.0:1812","service":"radius-auth","timestamp":"2025-06-18 22:09:38"}
+{"level":"info","message":"Loaded 1 NAS clients","service":"radius-auth","timestamp":"2025-06-18 22:09:38"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:17:57"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:19:35"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:19:45"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:20:00"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:20:08"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:20:12"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:21:22"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:21:39"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:21:55"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:21:58"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:23:07"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:23:21"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:24:22"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:24:34"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:24:52"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:27:02"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:27:14"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:29:20"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:43:21"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:44:18"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:44:22"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:46:56"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:46:57"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:47:03"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:47:41"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:47:41"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:49:49"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:49:49"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:50:17"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:50:39"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:50:40"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:50:42"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:50:52"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:57:27"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:57:29"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:57:34"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:57:35"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 22:57:50"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 22:57:52"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:09:59"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:10:01"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:15:05"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:15:07"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:18:23"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:18:34"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:19:02"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:19:04"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:20:28"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:20:32"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:20:59"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:21:08"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:22:31"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:22:34"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:27:02"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:27:09"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:28:03"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:28:46"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:34:02"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:34:04"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:39:40"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:39:44"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:39:53"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:40:20"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-18 23:50:17"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-18 23:50:18"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:28:40"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:28:53"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:34:10"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:34:10"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:34:11"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:34:15"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:35:09"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:35:09"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:35:31"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:35:52"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:35:52"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:36:37"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:40:03"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:40:11"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:40:15"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:41:29"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:41:37"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:41:41"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:41:48"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:41:49"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:41:57"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:41:58"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:42:01"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:42:11"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:42:17"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:42:45"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:42:45"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:42:47"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:43:02"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:45:10"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:45:10"}

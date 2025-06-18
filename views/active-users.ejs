@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .status-online { color: #059669; font-weight: 500; }
+        .status-offline { color: #dc2626; font-weight: 500; }
+        .stats-grid { margin-bottom: 2rem; }
+        .auto-refresh { 
+            background: #f0f9ff; 
+            border: 1px solid #0284c7; 
+            border-radius: 8px; 
+            padding: 1rem; 
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .refresh-status { color: #0369a1; font-size: 0.9rem; }
+        .data-usage { font-size: 0.85rem; color: #6b7280; }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'active-users' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <!-- Auto Refresh Control -->
+            <div class="auto-refresh">
+                <div>
+                    <strong>Auto Refresh:</strong>
+                    <select id="refreshInterval" style="margin-left: 0.5rem; padding: 0.25rem;">
+                        <option value="0">Off</option>
+                        <option value="5000">5 seconds</option>
+                        <option value="10000" selected>10 seconds</option>
+                        <option value="30000">30 seconds</option>
+                        <option value="60000">1 minute</option>
+                    </select>
+                </div>
+                <div class="refresh-status">
+                    Last updated: <span id="lastUpdate">Just now</span>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Users Online</div>
+                    <div class="stat-value" style="color: #059669;" id="onlineCount"><%= stats.onlineUsers %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">New Connections (1h)</div>
+                    <div class="stat-value" style="color: #0284c7;" id="newConnections"><%= stats.newConnectionsLastHour %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Sessions Today</div>
+                    <div class="stat-value" id="todaySessions"><%= stats.todaySessions %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Data Usage Today</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="todayUsage"><%= stats.todayUsageMB %> MB</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Auth Failures</div>
+                    <div class="stat-value" style="color: #dc2626;" id="authFailures"><%= stats.authFailuresToday %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Avg Session Time</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="avgSession"><%= stats.avgSessionMinutes %> min</div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h1 class="table-title">
+                        <% if (typeof view !== 'undefined' && view === 'comparison') { %>
+                            User Status Comparison
+                        <% } else { %>
+                            Active Users Monitoring
+                        <% } %>
+                    </h1>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="/monitoring" class="btn btn-primary btn-sm">📊 Real-time Monitor</a>
+                        <button onclick="refreshData()" class="btn btn-secondary btn-sm">🔄 Refresh</button>
+                    </div>
+                </div>
+
+                <!-- View Toggle -->
+                <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                    <span style="font-weight: 500;">View:</span>
+                    <a href="/active-users?view=active<%= search ? '&search=' + encodeURIComponent(search) : '' %><%= filter !== 'all' ? '&filter=' + filter : '' %>" 
+                       class="btn <%= (!view || view === 'active') ? 'btn-primary' : 'btn-secondary' %> btn-sm">
+                        📊 Active Sessions
+                    </a>
+                    <a href="/active-users?view=comparison<%= search ? '&search=' + encodeURIComponent(search) : '' %><%= filter !== 'all' ? '&filter=' + filter : '' %>" 
+                       class="btn <%= (view === 'comparison') ? 'btn-primary' : 'btn-secondary' %> btn-sm">
+                        👥 User Comparison
+                    </a>
+                </div>
+                
+                <!-- Comparison Summary (only in comparison view) -->
+                <% if (typeof view !== 'undefined' && view === 'comparison' && comparisonData && comparisonData.summary) { %>
+                <div class="stats-grid" style="margin-bottom: 1.5rem;">
+                    <div class="stat-card">
+                        <div class="stat-title">Total Configured Users</div>
+                        <div class="stat-value"><%= comparisonData.summary.total_configured_users %></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Currently Online</div>
+                        <div class="stat-value" style="color: #059669;"><%= comparisonData.summary.currently_online %></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Currently Offline</div>
+                        <div class="stat-value" style="color: #dc2626;"><%= comparisonData.summary.currently_offline %></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">Online Percentage</div>
+                        <div class="stat-value" style="color: #0284c7;"><%= comparisonData.summary.online_percentage %>%</div>
+                    </div>
+                </div>
+                <% } %>
+                
+                <!-- Filters -->
+                <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <form action="/active-users" method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <input type="hidden" name="view" value="<%= typeof view !== 'undefined' ? view : 'active' %>">
+                        <input type="text" name="search" placeholder="Cari username..." 
+                               value="<%= search %>" class="form-input" style="max-width: 250px;">
+                        
+                        <select name="filter" class="form-input" style="max-width: 150px;">
+                            <option value="all" <%= filter === 'all' ? 'selected' : '' %>>All Users</option>
+                            <option value="online" <%= filter === 'online' ? 'selected' : '' %>>Online Only</option>
+                            <option value="offline" <%= filter === 'offline' ? 'selected' : '' %>>Offline Only</option>
+                        </select>
+                        
+                        <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+                        <% if (search || filter !== 'all') { %>
+                        <a href="/active-users?view=<%= typeof view !== 'undefined' ? view : 'active' %>" class="btn btn-secondary btn-sm">Reset</a>
+                        <% } %>
+                    </form>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table class="table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <% if (typeof view !== 'undefined' && view === 'comparison') { %>
+                                    <!-- Comparison View Headers -->
+                                    <th>Username</th>
+                                    <th>Status</th>
+                                    <th>Connection Info</th>
+                                    <th>Session Time</th>
+                                    <th>Data Usage</th>
+                                    <th>Activity</th>
+                                    <th>Actions</th>
+                                <% } else { %>
+                                    <!-- Active Sessions View Headers -->
+                                    <th>Username</th>
+                                    <th>Status</th>
+                                    <th>IP Address</th>
+                                    <th>NAS IP</th>
+                                    <th>Session Time</th>
+                                    <th>Data Usage</th>
+                                    <th>Start Time</th>
+                                    <th>Actions</th>
+                                <% } %>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% users.forEach(function(user) { %>
+                            <tr>
+                                <% if (typeof view !== 'undefined' && view === 'comparison') { %>
+                                    <!-- Comparison View Data -->
+                                    <td>
+                                        <strong><%= user.username %></strong>
+                                        <% if (user.user_created) { %>
+                                        <br><small style="color: #6b7280;">Created: <%= new Date(user.user_created).toLocaleDateString('id-ID') %></small>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <span class="<%= user.status === 'Online' ? 'status-online' : 'status-offline' %>">
+                                            <%= user.status %>
+                                        </span>
+                                        <% if (user.activity_status && user.status === 'Online') { %>
+                                        <br><small style="color: #6b7280;"><%= user.activity_status %></small>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (user.status === 'Online') { %>
+                                            <strong>IP:</strong> <code><%= user.framedipaddress || '-' %></code><br>
+                                            <strong>NAS:</strong> <code><%= user.nasipaddress %></code>
+                                            <% if (user.callingstationid) { %>
+                                            <br><small>MAC: <%= user.callingstationid %></small>
+                                            <% } %>
+                                        <% } else { %>
+                                            <span style="color: #6b7280;">
+                                                <% if (user.last_seen) { %>
+                                                    Last seen: <%= new Date(user.last_seen).toLocaleString('id-ID') %>
+                                                <% } else { %>
+                                                    Never connected
+                                                <% } %>
+                                            </span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (user.status === 'Online' && user.session_duration) { %>
+                                            <%= user.session_duration %>
+                                        <% } else { %>
+                                            <span style="color: #6b7280;">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (user.status === 'Online' && (user.download_mb || user.upload_mb)) { %>
+                                            <div class="data-usage">
+                                                ↓ <%= user.download_mb || 0 %> MB<br>
+                                                ↑ <%= user.upload_mb || 0 %> MB<br>
+                                                <strong>Total: <%= user.total_data_mb || 0 %> MB</strong>
+                                            </div>
+                                        <% } else { %>
+                                            <span style="color: #6b7280;">-</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (user.status === 'Online') { %>
+                                            <% if (user.acctstarttime) { %>
+                                                Started: <%= new Date(user.acctstarttime).toLocaleString('id-ID') %>
+                                            <% } %>
+                                            <% if (user.connection_quality) { %>
+                                                <br><span class="<%= user.connection_quality === 'Active' ? 'status-online' : 'status-offline' %>" style="font-size: 0.8rem;">
+                                                    <%= user.connection_quality %>
+                                                </span>
+                                            <% } %>
+                                        <% } else { %>
+                                            <span style="color: #6b7280;">Offline</span>
+                                        <% } %>
+                                    </td>
+                                <% } else { %>
+                                    <!-- Active Sessions View Data -->
+                                    <td>
+                                        <strong><%= user.username %></strong>
+                                        <% if (user.callingstationid) { %>
+                                        <br><small style="color: #6b7280;">MAC: <%= user.callingstationid %></small>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <span class="<%= user.status === 'Online' ? 'status-online' : 'status-offline' %>">
+                                            <%= user.status %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <code><%= user.framedipaddress || '-' %></code>
+                                    </td>
+                                    <td>
+                                        <code><%= user.nasipaddress %></code>
+                                    </td>
+                                    <td>
+                                        <% if (user.session_duration) { %>
+                                            <% 
+                                            const hours = Math.floor(user.session_duration / 3600);
+                                            const minutes = Math.floor((user.session_duration % 3600) / 60);
+                                            const seconds = user.session_duration % 60;
+                                            %>
+                                            <%= hours %>h <%= minutes %>m <%= seconds %>s
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (user.acctinputoctets || user.acctoutputoctets) { %>
+                                            <div class="data-usage">
+                                                ↓ <%= Math.round((user.acctinputoctets || 0) / 1024 / 1024 * 100) / 100 %> MB<br>
+                                                ↑ <%= Math.round((user.acctoutputoctets || 0) / 1024 / 1024 * 100) / 100 %> MB
+                                            </div>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (user.acctstarttime) { %>
+                                            <%= new Date(user.acctstarttime).toLocaleString('id-ID') %>
+                                        <% } else { %>
+                                            -
+                                        <% } %>
+                                    </td>
+                                <% } %>
+                                <td>
+                                    <div class="actions">
+                                        <a href="/active-users/<%= user.username %>/sessions" 
+                                           class="btn btn-secondary btn-sm">History</a>
+                                        <% if (user.status === 'Online' && user.radacctid) { %>
+                                        <form action="/active-users/<%= user.radacctid %>/disconnect" method="POST" style="display: inline;" 
+                                              onsubmit="return confirm('Disconnect user <%= user.username %>?')">
+                                            <button type="submit" class="btn btn-danger btn-sm">Disconnect</button>
+                                        </form>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }); %>
+                            
+                            <% if (users.length === 0) { %>
+                            <tr>
+                                <td colspan="<%= (typeof view !== 'undefined' && view === 'comparison') ? '7' : '8' %>" style="text-align: center; color: #6b7280; padding: 2rem;">
+                                    <% if (search) { %>
+                                        Tidak ada user ditemukan untuk pencarian "<%= search %>"
+                                    <% } else if (typeof view !== 'undefined' && view === 'comparison') { %>
+                                        Tidak ada user yang dikonfigurasi
+                                    <% } else { %>
+                                        Tidak ada active user saat ini
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <% if (pagination.total > 1) { %>
+                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
+                    <% if (pagination.hasPrev) { %>
+                    <a href="?page=<%= pagination.current - 1 %><%= typeof view !== 'undefined' && view ? '&view=' + view : '' %><%= search ? '&search=' + encodeURIComponent(search) : '' %><%= filter !== 'all' ? '&filter=' + filter : '' %>" 
+                       class="btn btn-secondary btn-sm">← Previous</a>
+                    <% } %>
+                    
+                    <span style="padding: 0.5rem 1rem; color: #6b7280;">
+                        Page <%= pagination.current %> of <%= pagination.total %>
+                    </span>
+                    
+                    <% if (pagination.hasNext) { %>
+                    <a href="?page=<%= pagination.current + 1 %><%= typeof view !== 'undefined' && view ? '&view=' + view : '' %><%= search ? '&search=' + encodeURIComponent(search) : '' %><%= filter !== 'all' ? '&filter=' + filter : '' %>" 
+                       class="btn btn-secondary btn-sm">Next →</a>
+                    <% } %>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let refreshInterval = null;
+        
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours}h ${minutes}m ${secs}s`;
+        }
+        
+        function formatBytes(bytes) {
+            return Math.round(bytes / 1024 / 1024 * 100) / 100;
+        }
+        
+        function updateLastUpdateTime() {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('id-ID');
+        }
+        
+        async function refreshData() {
+            try {
+                const response = await fetch('/internal-api/active-users/statistics');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.data;
+                    document.getElementById('onlineCount').textContent = stats.onlineUsers;
+                    document.getElementById('newConnections').textContent = stats.newConnectionsLastHour;
+                    document.getElementById('todaySessions').textContent = stats.todaySessions;
+                    document.getElementById('todayUsage').textContent = stats.todayUsageMB + ' MB';
+                    document.getElementById('authFailures').textContent = stats.authFailuresToday;
+                    document.getElementById('avgSession').textContent = stats.avgSessionMinutes + ' min';
+                }
+                
+                updateLastUpdateTime();
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+            }
+        }
+        
+        // Auto refresh setup
+        document.getElementById('refreshInterval').addEventListener('change', function() {
+            const interval = parseInt(this.value);
+            
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+            
+            if (interval > 0) {
+                refreshInterval = setInterval(refreshData, interval);
+            }
+        });
+        
+        // Set initial auto refresh
+        const initialInterval = parseInt(document.getElementById('refreshInterval').value);
+        if (initialInterval > 0) {
+            refreshInterval = setInterval(refreshData, initialInterval);
+        }
+        
+        // Update last update time on page load
+        updateLastUpdateTime();
+    </script>
+</body>
+</html>

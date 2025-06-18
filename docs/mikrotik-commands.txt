@@ -1,0 +1,71 @@
+# ================================
+# KONFIGURASI MIKROTIK - COPY PASTE
+# ================================
+# Ganti IP_RADIUS_SERVER dengan IP server Node.js Anda
+
+# 1. SETUP RADIUS CLIENT
+/radius
+add address=192.168.90.6 secret=testing123 service=ppp timeout=3s accounting=yes
+
+# 2. BUAT IP POOL
+/ip pool
+add name="pppoe-pool" ranges=192.168.100.10-192.168.100.100
+
+# 3. BUAT PPP PROFILE
+/ppp profile
+add name="pppoe-radius" local-address=192.168.100.1 remote-address=pppoe-pool use-encryption=yes dns-server=8.8.8.8,8.8.4.4 change-tcp-mss=yes
+
+# 4. SETUP PPPOE SERVER (ganti ether2 dengan interface LAN Anda)
+/interface pppoe-server server
+add service-name="internet" interface=ether2 default-profile=pppoe-radius authentication=pap,chap keepalive-timeout=60
+
+# 5. ENABLE RADIUS UNTUK PPP
+/ppp aaa
+set use-radius=yes accounting=yes
+
+# 6. FIREWALL (jika diperlukan)
+/ip firewall filter
+add chain=input protocol=udp dst-port=1812 action=accept comment="RADIUS Auth"
+add chain=input protocol=udp dst-port=1813 action=accept comment="RADIUS Accounting"
+
+# 7. ENABLE LOGGING
+/system logging
+add topics=radius,debug action=memory
+
+# ================================
+# COMMAND UNTUK TESTING & MONITORING
+# ================================
+
+# Lihat status RADIUS
+/radius print detail
+
+# Lihat koneksi PPPoE aktif
+/ppp active print
+
+# Lihat log RADIUS
+/log print where topics~"radius"
+
+# Test ping ke RADIUS server
+/ping 192.168.90.6 count=5
+
+# Monitor interface PPPoE
+/interface monitor pppoe-out1
+
+# ================================
+# TROUBLESHOOTING COMMANDS
+# ================================
+
+# Reset RADIUS statistics
+/radius reset-statistics
+
+# Backup konfigurasi
+/export file=backup-radius-config
+
+# Lihat semua interface
+/interface print
+
+# Cek routing table
+/ip route print
+
+# Test DNS
+/ping google.com

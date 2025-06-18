@@ -1,0 +1,164 @@
+<%- include('partials/header', { title: 'Add Group' }) %>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Add New Group</h3>
+                    <div class="card-tools">
+                        <a href="/groups" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Groups
+                        </a>
+                    </div>
+                </div>
+                
+                <form action="/groups/add" method="POST">
+                    <div class="card-body">
+                        <!-- Flash Messages -->
+                        <% if (typeof error !== 'undefined' && error) { %>
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <i class="icon fas fa-ban"></i> <%= error %>
+                            </div>
+                        <% } %>
+                        
+                        <% if (typeof success !== 'undefined' && success) { %>
+                            <div class="alert alert-success alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <i class="icon fas fa-check"></i> <%= success %>
+                            </div>
+                        <% } %>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="groupname">Group Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="groupname" name="groupname" 
+                                           placeholder="Enter group name" required>
+                                    <small class="form-text text-muted">Unique identifier for the group</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="priority">Priority</label>
+                                    <input type="number" class="form-control" id="priority" name="priority" 
+                                           placeholder="Enter priority (optional)" min="1" max="100">
+                                    <small class="form-text text-muted">Higher numbers = higher priority (1-100)</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="Enter group description (optional)"></textarea>
+                        </div>
+
+                        <hr>
+                        <h5>Group Attributes</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="session_timeout">Session Timeout (seconds)</label>
+                                    <input type="number" class="form-control" id="session_timeout" name="session_timeout" 
+                                           placeholder="e.g., 3600" min="60">
+                                    <small class="form-text text-muted">Maximum session duration</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="idle_timeout">Idle Timeout (seconds)</label>
+                                    <input type="number" class="form-control" id="idle_timeout" name="idle_timeout" 
+                                           placeholder="e.g., 1800" min="60">
+                                    <small class="form-text text-muted">Maximum idle time</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="max_daily_session">Max Daily Session (seconds)</label>
+                                    <input type="number" class="form-control" id="max_daily_session" name="max_daily_session" 
+                                           placeholder="e.g., 28800" min="60">
+                                    <small class="form-text text-muted">Maximum session time per day</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="max_monthly_session">Max Monthly Session (seconds)</label>
+                                    <input type="number" class="form-control" id="max_monthly_session" name="max_monthly_session" 
+                                           placeholder="e.g., 864000" min="60">
+                                    <small class="form-text text-muted">Maximum session time per month</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="download_limit">Download Limit (bytes)</label>
+                                    <input type="number" class="form-control" id="download_limit" name="download_limit" 
+                                           placeholder="e.g., 1073741824" min="0">
+                                    <small class="form-text text-muted">Maximum download per session</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="upload_limit">Upload Limit (bytes)</label>
+                                    <input type="number" class="form-control" id="upload_limit" name="upload_limit" 
+                                           placeholder="e.g., 1073741824" min="0">
+                                    <small class="form-text text-muted">Maximum upload per session</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="download_rate">Download Rate (bps)</label>
+                                    <input type="number" class="form-control" id="download_rate" name="download_rate" 
+                                           placeholder="e.g., 1048576" min="0">
+                                    <small class="form-text text-muted">Download speed limit</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="upload_rate">Upload Rate (bps)</label>
+                                    <input type="number" class="form-control" id="upload_rate" name="upload_rate" 
+                                           placeholder="e.g., 1048576" min="0">
+                                    <small class="form-text text-muted">Upload speed limit</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="is_active" name="is_active" value="1" checked>
+                                <label class="form-check-label" for="is_active">
+                                    Active Group
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Create Group
+                        </button>
+                        <a href="/groups" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,142 @@
+/* Custom CSS for RADIUS Server Management */
+
+.content-wrapper {
+    background-color: #f4f4f4;
+}
+
+.small-box {
+    border-radius: 8px;
+}
+
+.card {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.card-header {
+    background-color: #007bff;
+    color: white;
+    border-bottom: none;
+}
+
+.btn {
+    border-radius: 4px;
+}
+
+.table {
+    background-color: white;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.alert {
+    border-radius: 4px;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.status-active {
+    color: #28a745;
+}
+
+.status-inactive {
+    color: #dc3545;
+}
+
+.session-time {
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.auto-refresh-indicator {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .content-wrapper {
+        background-color: #2c3e50;
+    }
+    
+    .card {
+        background-color: #34495e;
+        color: white;
+    }
+    
+    .table {
+        background-color: #34495e;
+        color: white;
+    }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .small-box .inner h3 {
+        font-size: 1.5rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group-sm > .btn, .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Loading spinner */
+.loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Custom utilities */
+.text-monospace {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.border-left-primary {
+    border-left: 3px solid #007bff !important;
+}
+
+.border-left-success {
+    border-left: 3px solid #28a745 !important;
+}
+
+.border-left-warning {
+    border-left: 3px solid #ffc107 !important;
+}
+
+.border-left-danger {
+    border-left: 3px solid #dc3545 !important;
+}

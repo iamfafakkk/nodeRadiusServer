@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .group-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: white;
+        }
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .group-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .user-count {
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        .attributes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .attributes-section {
+            background: #f9fafb;
+            padding: 0.75rem;
+            border-radius: 6px;
+        }
+        .attributes-title {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .attribute-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .attribute-item:last-child {
+            border-bottom: none;
+        }
+        .attribute-name {
+            font-weight: 500;
+            color: #374151;
+        }
+        .attribute-value {
+            color: #6b7280;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'groups' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h1 class="table-title">Group Management</h1>
+                    <% if (user.is_super_admin) { %>
+                    <a href="/groups/add" class="btn btn-success">Tambah Group</a>
+                    <% } %>
+                </div>
+                
+                <!-- Search Form -->
+                <div style="margin-bottom: 1.5rem;">
+                    <form action="/groups" method="GET" style="display: flex; gap: 1rem; align-items: center;">
+                        <input type="text" name="search" placeholder="Cari group name..." 
+                               value="<%= search %>" class="form-input" style="max-width: 350px;">
+                        <button type="submit" class="btn btn-secondary btn-sm">Cari</button>
+                        <% if (search) { %>
+                        <a href="/groups" class="btn btn-secondary btn-sm">Reset</a>
+                        <% } %>
+                    </form>
+                </div>
+                
+                <!-- Groups List -->
+                <% if (groups.length > 0) { %>
+                    <% groups.forEach(function(group) { %>
+                    <div class="group-card">
+                        <div class="group-header">
+                            <div>
+                                <span class="group-name"><%= group.groupname %></span>
+                                <span class="user-count"><%= group.userCount %> users</span>
+                            </div>
+                            <% if (user.is_super_admin) { %>
+                            <div class="actions">
+                                <a href="/groups/<%= group.groupname %>" class="btn btn-secondary btn-sm">Detail</a>
+                                <a href="/groups/<%= group.groupname %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                                <form action="/groups/<%= group.groupname %>/delete" method="POST" style="display: inline;" 
+                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus group <%= group.groupname %>? Ini akan mempengaruhi <%= group.userCount %> users.')">
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            </div>
+                            <% } %>
+                        </div>
+                        
+                        <div class="attributes-grid">
+                            <div class="attributes-section">
+                                <div class="attributes-title">Check Attributes</div>
+                                <% if (group.checkAttributes && group.checkAttributes.length > 0) { %>
+                                    <% group.checkAttributes.forEach(function(attr) { %>
+                                    <div class="attribute-item">
+                                        <span class="attribute-name"><%= attr.attribute %></span>
+                                        <span class="attribute-value"><%= attr.op %> <%= attr.value %></span>
+                                    </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div style="color: #9ca3af; font-style: italic; font-size: 0.875rem;">
+                                        Tidak ada check attributes
+                                    </div>
+                                <% } %>
+                            </div>
+                            
+                            <div class="attributes-section">
+                                <div class="attributes-title">Reply Attributes</div>
+                                <% if (group.replyAttributes && group.replyAttributes.length > 0) { %>
+                                    <% group.replyAttributes.forEach(function(attr) { %>
+                                    <div class="attribute-item">
+                                        <span class="attribute-name"><%= attr.attribute %></span>
+                                        <span class="attribute-value"><%= attr.op %> <%= attr.value %></span>
+                                    </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div style="color: #9ca3af; font-style: italic; font-size: 0.875rem;">
+                                        Tidak ada reply attributes
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                <% } else { %>
+                    <div style="text-align: center; padding: 3rem; color: #6b7280;">
+                        <% if (search) { %>
+                            Tidak ada group ditemukan untuk pencarian "<%= search %>"
+                        <% } else { %>
+                            Belum ada group yang dibuat
+                        <% } %>
+                    </div>
+                <% } %>
+                
+                <!-- Pagination -->
+                <% if (pagination.total > 1) { %>
+                <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem;">
+                    <% if (pagination.hasPrev) { %>
+                    <a href="?page=<%= pagination.current - 1 %><%= search ? '&search=' + encodeURIComponent(search) : '' %>" 
+                       class="btn btn-secondary btn-sm">← Previous</a>
+                    <% } %>
+                    
+                    <span style="padding: 0.5rem 1rem; color: #6b7280;">
+                        Page <%= pagination.current %> of <%= pagination.total %>
+                    </span>
+                    
+                    <% if (pagination.hasNext) { %>
+                    <a href="?page=<%= pagination.current + 1 %><%= search ? '&search=' + encodeURIComponent(search) : '' %>" 
+                       class="btn btn-secondary btn-sm">Next →</a>
+                    <% } %>
+                </div>
+                <% } %>
+                
+                <!-- Info -->
+                <% if (groups.length > 0) { %>
+                <div style="margin-top: 2rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border: 1px solid #0284c7;">
+                    <h4 style="color: #0284c7; margin-bottom: 0.5rem;">💡 Tentang Groups:</h4>
+                    <ul style="color: #0369a1; font-size: 0.9rem; margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Check Attributes:</strong> Validasi yang harus dipenuhi user (misal: batas login simultan)</li>
+                        <li><strong>Reply Attributes:</strong> Konfigurasi yang diberikan ke user saat login berhasil</li>
+                        <li><strong>User Assignment:</strong> User bisa diassign ke multiple groups dengan priority</li>
+                        <li><strong>Default Groups:</strong> default, premium, unlimited sudah tersedia</li>
+                    </ul>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

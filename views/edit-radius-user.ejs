@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'radius-users' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h1 class="table-title">Edit RADIUS User: <%= radiusUser.username %></h1>
+                    <a href="/radius-users" class="btn btn-secondary">Kembali</a>
+                </div>
+                
+                <form action="/radius-users/<%= radiusUser.username %>/edit" method="POST" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username" class="form-input" 
+                               value="<%= radiusUser.username %>" disabled>
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Username tidak dapat diubah
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password Baru (Opsional)</label>
+                        <input type="password" id="password" name="password" class="form-input" 
+                               placeholder="Kosongkan jika tidak ingin mengubah password">
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Password minimal 4 karakter
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Konfirmasi Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" 
+                               placeholder="Ulangi password baru">
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-success">Update RADIUS User</button>
+                        <a href="/radius-users" class="btn btn-secondary">Batal</a>
+                    </div>
+                </form>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: #fef3c7; border-radius: 8px; border: 1px solid #d97706;">
+                    <h4 style="color: #d97706; margin-bottom: 0.5rem;">⚠️ Perhatian:</h4>
+                    <ul style="color: #92400e; font-size: 0.9rem; margin: 0; padding-left: 1.5rem;">
+                        <li>Perubahan password akan langsung berlaku</li>
+                        <li>User yang sedang online mungkin perlu login ulang</li>
+                        <li>Pastikan menggunakan password yang kuat</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

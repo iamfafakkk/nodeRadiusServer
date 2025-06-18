@@ -1,0 +1,538 @@
+<%- include('partials/header', { title: 'User Sessions' }) %>
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">
+                    <i class="fas fa-user-clock mr-2"></i>
+                    Session History for: <strong><%= username %></strong>
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/admin/active-users">Active Users</a></li>
+                    <li class="breadcrumb-item active">User Sessions</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid user-sessions-container">        <div class="row">
+            <div class="col-12">
+                <!-- Session Statistics Row -->
+                <div class="row session-stats-container">
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box session-stat-box bg-info">
+                            <div class="inner">
+                                <h3><%= activityPattern.stats.totalSessions || 0 %></h3>
+                                <p>Total Sessions</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-history"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box session-stat-box bg-success">
+                            <div class="inner">
+                                <h3><%= activityPattern.stats.activeSessions || 0 %></h3>
+                                <p>Active Sessions</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box session-stat-box bg-warning">
+                            <div class="inner">
+                                <h3><%= activityPattern.stats.totalTimeFormatted || '0h 0m' %></h3>
+                                <p>Total Time</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box session-stat-box bg-danger">
+                            <div class="inner">
+                                <h3><%= activityPattern.stats.lastSession || 'Never' %></h3>
+                                <p>Last Session</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-filter mr-2"></i>
+                            Filters
+                        </h3>
+                    </div>
+                    <div class="card-body filters-section">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="dateRange">
+                                        <i class="fas fa-calendar-alt mr-1"></i>
+                                        Date Range:
+                                    </label>
+                                    <select class="form-control" id="dateRange" onchange="filterSessions()">
+                                        <option value="all" <%= filter.dateRange === 'all' ? 'selected' : '' %>>All Time</option>
+                                        <option value="today" <%= filter.dateRange === 'today' ? 'selected' : '' %>>Today</option>
+                                        <option value="week" <%= filter.dateRange === 'week' ? 'selected' : '' %>>This Week</option>
+                                        <option value="month" <%= filter.dateRange === 'month' ? 'selected' : '' %>>This Month</option>
+                                        <option value="custom" <%= filter.dateRange === 'custom' ? 'selected' : '' %>>Custom Range</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sessionStatus">
+                                        <i class="fas fa-filter mr-1"></i>
+                                        Session Status:
+                                    </label>
+                                    <select class="form-control" id="sessionStatus" onchange="filterSessions()">
+                                        <option value="all" <%= filter.status === 'all' ? 'selected' : '' %>>All Sessions</option>
+                                        <option value="active" <%= filter.status === 'active' ? 'selected' : '' %>>Active Only</option>
+                                        <option value="finished" <%= filter.status === 'finished' ? 'selected' : '' %>>Finished Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Date Range (hidden by default) -->
+                        <div class="row" id="customDateRange" <% if (filter.dateRange !== 'custom') { %>style="display: none"<% } %>>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="startDate">
+                                        <i class="fas fa-calendar-day mr-1"></i>
+                                        Start Date:
+                                    </label>
+                                    <input type="date" class="form-control" id="startDate" value="<%= filter.startDate || '' %>">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="endDate">
+                                        <i class="fas fa-calendar-day mr-1"></i>
+                                        End Date:
+                                    </label>
+                                    <input type="date" class="form-control" id="endDate" value="<%= filter.endDate || '' %>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessions Table Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-list mr-2"></i>
+                            Session History
+                        </h3>
+                        <div class="card-tools">
+                            <a href="/admin/active-users" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-arrow-left"></i> Back to Active Users
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="sessions-table-container">
+                            <table class="table table-striped table-hover sessions-table">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-id-card mr-1"></i>Session ID</th>
+                                        <th><i class="fas fa-play mr-1"></i>Start Time</th>
+                                        <th><i class="fas fa-stop mr-1"></i>Stop Time</th>
+                                        <th><i class="fas fa-clock mr-1"></i>Duration</th>
+                                        <th><i class="fas fa-server mr-1"></i>NAS IP</th>
+                                        <th><i class="fas fa-network-wired mr-1"></i>Framed IP</th>
+                                        <th><i class="fas fa-download mr-1"></i>Input Data</th>
+                                        <th><i class="fas fa-upload mr-1"></i>Output Data</th>
+                                        <th><i class="fas fa-exclamation-triangle mr-1"></i>Terminate Cause</th>
+                                        <th><i class="fas fa-info-circle mr-1"></i>Status</th>
+                                        <th><i class="fas fa-cogs mr-1"></i>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (sessions && sessions.length > 0) { %>
+                                        <% sessions.forEach(function(session) { %>
+                                            <tr>
+                                                <td><code><%= session.radacctid %></code></td>
+                                                <td>
+                                                    <small class="text-muted">
+                                                        <%= new Date(session.acctstarttime).toLocaleString() %>
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    <% if (session.acctstoptime) { %>
+                                                        <small class="text-muted">
+                                                            <%= new Date(session.acctstoptime).toLocaleString() %>
+                                                        </small>
+                                                    <% } else { %>
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-circle mr-1"></i>Active
+                                                        </span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (session.acctsessiontime) { %>
+                                                        <span class="session-duration">
+                                                            <%= Math.floor(session.acctsessiontime / 3600) %>h 
+                                                            <%= Math.floor((session.acctsessiontime % 3600) / 60) %>m 
+                                                            <%= session.acctsessiontime % 60 %>s
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="text-muted">-</span>
+                                                    <% } %>
+                                                </td>
+                                                <td><code><%= session.nasipaddress %></code></td>
+                                                <td>
+                                                    <% if (session.framedipaddress) { %>
+                                                        <code><%= session.framedipaddress %></code>
+                                                    <% } else { %>
+                                                        <span class="text-muted">-</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (session.acctinputoctets) { %>
+                                                        <% var inputMB = session.acctinputoctets / 1024 / 1024; %>
+                                                        <span class="data-usage <%= inputMB > 100 ? 'text-danger' : inputMB > 50 ? 'text-warning' : 'text-success' %>">
+                                                            <i class="fas fa-download mr-1"></i>
+                                                            <%= inputMB.toFixed(2) %> MB
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="text-muted">-</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (session.acctoutputoctets) { %>
+                                                        <% var outputMB = session.acctoutputoctets / 1024 / 1024; %>
+                                                        <span class="data-usage <%= outputMB > 100 ? 'text-danger' : outputMB > 50 ? 'text-warning' : 'text-success' %>">
+                                                            <i class="fas fa-upload mr-1"></i>
+                                                            <%= outputMB.toFixed(2) %> MB
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="text-muted">-</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (session.acctterminatecause) { %>
+                                                        <span class="badge badge-secondary">
+                                                            <%= session.acctterminatecause %>
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="text-muted">-</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (session.acctstoptime) { %>
+                                                        <span class="badge badge-secondary">
+                                                            <i class="fas fa-check mr-1"></i>Finished
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-circle mr-1"></i>Active
+                                                        </span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (!session.acctstoptime) { %>
+                                                        <button class="btn btn-danger btn-sm btn-action" onclick="disconnectSession('<%= session.acctuniqueid %>')">
+                                                            <i class="fas fa-times"></i> Disconnect
+                                                        </button>
+                                                    <% } else { %>
+                                                        <span class="text-muted">
+                                                            <i class="fas fa-check"></i> Completed
+                                                        </span>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="11" class="text-center empty-state py-5">
+                                                <i class="fas fa-history fa-3x mb-3 text-muted"></i>
+                                                <h5>No Session History Found</h5>
+                                                <p class="mb-0">No session history found for user <strong><%= username %></strong></p>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <% if (pagination && pagination.total > 1) { %>
+                        <div class="card-footer">
+                            <nav aria-label="Session pagination">
+                                <ul class="pagination justify-content-center m-0">
+                                    <% if (pagination.current > 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= pagination.current - 1 %>&<%= new URLSearchParams(filter).toString() %>">Previous</a>
+                                        </li>
+                                    <% } %>
+                                    
+                                    <% for (let i = Math.max(1, pagination.current - 2); i <= Math.min(pagination.total, pagination.current + 2); i++) { %>
+                                        <li class="page-item <%= i === pagination.current ? 'active' : '' %>">
+                                            <a class="page-link" href="?page=<%= i %>&<%= new URLSearchParams(filter).toString() %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+                                    
+                                    <% if (pagination.current < pagination.total) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<%= pagination.current + 1 %>&<%= new URLSearchParams(filter).toString() %>">Next</a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                            
+                            <div class="text-center text-muted mt-2">
+                                Page <%= pagination.current %> of <%= pagination.total %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Add loading animations and enhancements
+function showLoading() {
+    const tableContainer = document.querySelector('.sessions-table-container');
+    if (tableContainer) {
+        tableContainer.classList.add('table-loading');
+    }
+}
+
+function hideLoading() {
+    const tableContainer = document.querySelector('.sessions-table-container');
+    if (tableContainer) {
+        tableContainer.classList.remove('table-loading');
+    }
+}
+
+function filterSessions() {
+    showLoading();
+    
+    const dateRange = document.getElementById('dateRange').value;
+    const sessionStatus = document.getElementById('sessionStatus').value;
+    
+    // Show/hide custom date range inputs with animation
+    const customDateRange = document.getElementById('customDateRange');
+    if (dateRange === 'custom') {
+        customDateRange.style.display = 'block';
+        customDateRange.style.opacity = '0';
+        setTimeout(() => {
+            customDateRange.style.transition = 'opacity 0.3s ease';
+            customDateRange.style.opacity = '1';
+        }, 10);
+    } else {
+        customDateRange.style.transition = 'opacity 0.3s ease';
+        customDateRange.style.opacity = '0';
+        setTimeout(() => {
+            customDateRange.style.display = 'none';
+        }, 300);
+    }
+    
+    // Build query parameters
+    let params = new URLSearchParams(window.location.search);
+    params.set('dateRange', dateRange);
+    params.set('status', sessionStatus);
+    params.delete('page'); // Reset to first page
+    
+    if (dateRange === 'custom') {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        if (startDate) params.set('startDate', startDate);
+        if (endDate) params.set('endDate', endDate);
+    } else {
+        params.delete('startDate');
+        params.delete('endDate');
+    }
+    
+    // Add a small delay to show loading animation
+    setTimeout(() => {
+        window.location.search = params.toString();
+    }, 500);
+}
+
+function disconnectSession(sessionId) {
+    // Enhanced disconnect confirmation with better styling
+    const confirmModal = confirm('⚠️ Are you sure you want to disconnect this session?\n\nThis action will immediately terminate the user\'s connection.');
+    
+    if (confirmModal) {
+        // Show loading state
+        const button = event.target.closest('button');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Disconnecting...';
+        button.disabled = true;
+        
+        fetch('/admin/active-users/disconnect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ sessionId: sessionId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Success notification
+                showNotification('✅ Session disconnected successfully', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                // Error notification
+                showNotification('❌ Error disconnecting session: ' + data.message, 'error');
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('❌ Network error while disconnecting session', 'error');
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+        });
+    }
+}
+
+// Enhanced notification system
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.custom-notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `custom-notification alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'}`;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        max-width: 400px;
+        font-weight: 600;
+        animation: slideInRight 0.3s ease;
+    `;
+    notification.innerHTML = message;
+    
+    // Add CSS animation
+    if (!document.querySelector('#notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Handle custom date range changes with debouncing
+let dateChangeTimeout;
+
+function handleDateChange() {
+    clearTimeout(dateChangeTimeout);
+    dateChangeTimeout = setTimeout(() => {
+        if (document.getElementById('dateRange').value === 'custom') {
+            filterSessions();
+        }
+    }, 1000); // 1 second delay to avoid rapid API calls
+}
+
+document.getElementById('startDate').addEventListener('change', handleDateChange);
+document.getElementById('endDate').addEventListener('change', handleDateChange);
+
+// Add smooth scrolling to pagination
+document.addEventListener('DOMContentLoaded', function() {
+    const paginationLinks = document.querySelectorAll('.pagination .page-link');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            showLoading();
+            // Let the default navigation happen, but show loading
+        });
+    });
+    
+    // Add tooltips to data usage indicators
+    const dataUsageElements = document.querySelectorAll('.data-usage');
+    dataUsageElements.forEach(element => {
+        const mbValue = parseFloat(element.textContent);
+        if (mbValue > 100) {
+            element.title = 'High data usage';
+        } else if (mbValue > 50) {
+            element.title = 'Moderate data usage';
+        } else {
+            element.title = 'Low data usage';
+        }
+    });
+    
+    // Initialize any existing custom date range display
+    const dateRange = document.getElementById('dateRange').value;
+    if (dateRange === 'custom') {
+        document.getElementById('customDateRange').style.display = 'block';
+    }
+});
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + R to refresh
+    if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        location.reload();
+    }
+    
+    // Escape to clear filters
+    if (e.key === 'Escape') {
+        document.getElementById('dateRange').value = 'all';
+        document.getElementById('sessionStatus').value = 'all';
+        filterSessions();
+    }
+});
+</script>
+
+<%- include('partials/footer') %>

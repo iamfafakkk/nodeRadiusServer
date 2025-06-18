@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - RADIUS Server Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .monitoring-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #0284c7;
+        }
+        
+        .stat-title {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .stat-change.positive { color: #059669; }
+        .stat-change.negative { color: #dc2626; }
+        
+        .events-container, .alerts-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+        
+        .event-item, .alert-item {
+            padding: 0.75rem;
+            border-left: 3px solid #e5e7eb;
+            margin-bottom: 0.75rem;
+            border-radius: 4px;
+            background: #f9fafb;
+        }
+        
+        .event-item.connection { border-left-color: #059669; }
+        .event-item.disconnection { border-left-color: #dc2626; }
+        
+        .alert-item.warning { 
+            border-left-color: #f59e0b; 
+            background: #fffbeb;
+        }
+        .alert-item.error { 
+            border-left-color: #dc2626; 
+            background: #fef2f2;
+        }
+        .alert-item.info { 
+            border-left-color: #0284c7; 
+            background: #eff6ff;
+        }
+        
+        .event-time, .alert-time {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+        
+        .event-description, .alert-message {
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        
+        .online-users-table {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-online { background-color: #059669; }
+        .status-warning { background-color: #f59e0b; }
+        .status-error { background-color: #dc2626; }
+        
+        .auto-refresh-control {
+            background: #f0f9ff;
+            border: 1px solid #0284c7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .refresh-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .last-update {
+            color: #0369a1;
+            font-size: 0.9rem;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 4px solid #6b7280;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .notification.success { border-left-color: #059669; }
+        .notification.warning { border-left-color: #f59e0b; }
+        .notification.error { border-left-color: #dc2626; }
+        .notification.info { border-left-color: #0284c7; }
+        
+        .notification button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.25rem;
+        }
+        
+        .new-event {
+            animation: highlightNew 3s ease-out;
+            border-left-width: 6px !important;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes highlightNew {
+            0% {
+                background-color: #fef3c7;
+                transform: scale(1.02);
+            }
+            100% {
+                background-color: #f9fafb;
+                transform: scale(1);
+            }
+        }
+        
+        .connected {
+            color: #059669;
+            font-weight: 500;
+        }
+        
+        .disconnected {
+            color: #dc2626;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 768px) {
+            .monitoring-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header', { currentPage: 'monitoring' }) %>
+    
+    <main class="main">
+        <div class="container">
+            <%- include('partials/alerts') %>
+            
+            <!-- Auto Refresh Control -->
+            <div class="auto-refresh-control">
+                <div class="refresh-controls">
+                    <strong>Auto Refresh:</strong>
+                    <select id="refreshInterval" style="margin-left: 0.5rem; padding: 0.25rem;">
+                        <option value="0">Off</option>
+                        <option value="5000" selected>5 seconds</option>
+                        <option value="10000">10 seconds</option>
+                        <option value="30000">30 seconds</option>
+                        <option value="60000">1 minute</option>
+                    </select>
+                    <button onclick="refreshData()" class="btn btn-secondary btn-sm">🔄 Refresh Now</button>
+                </div>
+                <div class="last-update">
+                    WebSocket: <span id="connectionStatus" class="disconnected">Connecting...</span><br>
+                    Last updated: <span id="lastUpdate">Just now</span>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Users Online</div>
+                    <div class="stat-value" id="onlineUsersCount"><%= statistics.onlineUsers %></div>
+                    <div class="stat-change" id="onlineUsersChange"></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">New Connections (1h)</div>
+                    <div class="stat-value" id="newConnectionsCount"><%= statistics.newConnectionsLastHour %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">New Connections (5m)</div>
+                    <div class="stat-value" style="color: #f59e0b;" id="newConnections5m"><%= statistics.newConnectionsLast5Min %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Long Sessions (>12h)</div>
+                    <div class="stat-value" style="color: #dc2626;" id="longSessions"><%= statistics.longSessions %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">High Usage Users</div>
+                    <div class="stat-value" style="color: #7c3aed;" id="highUsageUsers"><%= statistics.highUsageUsers %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Current Data Usage</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="currentUsage"><%= statistics.currentUsageMB %> MB</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Today's Sessions</div>
+                    <div class="stat-value" id="todaySessionsCount"><%= statistics.todaySessions %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Today's Data</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="todayUsage"><%= statistics.todayUsageMB %> MB</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Auth Failures</div>
+                    <div class="stat-value" style="color: #dc2626;" id="authFailures"><%= statistics.authFailuresToday %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Peak Hour</div>
+                    <div class="stat-value" style="font-size: 1.5rem;" id="peakHour">
+                        <%= statistics.peakHour !== null ? statistics.peakHour + ':00' : 'N/A' %>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #6b7280;">
+                        <%= statistics.peakConnections %> connections
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Unique Users Today</div>
+                    <div class="stat-value" id="uniqueUsers"><%= statistics.todayUniqueUsers %></div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">Avg Session Time</div>
+                    <div class="stat-value" style="font-size: 1.2rem;" id="avgSession"><%= statistics.avgSessionMinutes %> min</div>
+                </div>
+            </div>
+
+            <div class="monitoring-container">
+                <!-- Online Users Table -->
+                <div class="online-users-table">
+                    <h2 style="margin-bottom: 1rem;">Currently Online Users</h2>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
+                        <i>Menampilkan hanya koneksi terbaru untuk setiap username</i>
+                    </p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Username</th>
+                                <th>IP Address</th>
+                                <th>NAS</th>
+                                <th>Duration</th>
+                                <th>Data Usage</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="onlineUsersTable">
+                            <% 
+                            // Filter untuk menghilangkan username duplikat dari server-side
+                            const uniqueUsers = [];
+                            const usernameMap = new Map();
+                            
+                            // Urutkan berdasarkan acctstarttime (terbaru dulu)
+                            const sortedUsers = onlineUsers.sort((a, b) => {
+                                const timeA = new Date(a.acctstarttime || 0);
+                                const timeB = new Date(b.acctstarttime || 0);
+                                return timeB - timeA;
+                            });
+                            
+                            // Ambil hanya username unik (yang pertama/terbaru)
+                            sortedUsers.forEach(user => {
+                                if (!usernameMap.has(user.username)) {
+                                    usernameMap.set(user.username, true);
+                                    uniqueUsers.push(user);
+                                }
+                            });
+                            %>
+                            <% uniqueUsers.forEach(user => { %>
+                            <tr>
+                                <td>
+                                    <span class="status-indicator 
+                                        <%= user.connection_age === 'new' ? 'status-warning' : 'status-online' %>"></span>
+                                    <%= user.connection_age === 'new' ? 'New' : 'Online' %>
+                                </td>
+                                <td><%= user.username %></td>
+                                <td><%= user.framedipaddress %></td>
+                                <td><%= user.nasipaddress %></td>
+                                <td id="duration-<%= user.radacctid %>"><%= Math.floor(user.session_duration / 3600) %>h <%= Math.floor((user.session_duration % 3600) / 60) %>m</td>
+                                <td><%= user.total_data_mb %> MB</td>
+                                <td>
+                                    <a href="/active-users/<%= user.username %>/sessions" class="btn btn-secondary btn-sm">Sessions</a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Events and Alerts Sidebar -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Recent Events -->
+                    <div class="events-container">
+                        <h3 style="margin-bottom: 1rem;">Recent Events</h3>
+                        <div id="recentEvents">
+                            <% recentEvents.slice(0, 10).forEach(event => { %>
+                            <div class="event-item <%= event.event_type %>">
+                                <div class="event-time"><%= new Date(event.event_time).toLocaleString('id-ID') %></div>
+                                <div class="event-description">
+                                    <strong><%= event.username %></strong><br>
+                                    <%= event.description %>
+                                    <% if (event.data_mb > 0) { %>
+                                    <br><small>Data: <%= event.data_mb %> MB</small>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div class="alerts-container">
+                        <h3 style="margin-bottom: 1rem;">System Alerts</h3>
+                        <div id="systemAlerts">
+                            <% if (alerts && alerts.length > 0) { %>
+                                <% alerts.forEach(alert => { %>
+                                <div class="alert-item <%= alert.severity %>">
+                                    <div class="alert-time"><%= alert.timestamp.toLocaleString('id-ID') %></div>
+                                    <div class="alert-message">
+                                        <strong><%= alert.username %></strong><br>
+                                        <%= alert.message %>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            <% } else { %>
+                            <div class="alert-item info">
+                                <div class="alert-message">No active alerts</div>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let refreshInterval = null;
+        let previousStats = null;
+        let websocket = null;
+        
+        // Initialize WebSocket connection
+        function initWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+            
+            websocket = new WebSocket(wsUrl);
+            
+            websocket.onopen = function(event) {
+                console.log('WebSocket connected');
+                updateConnectionStatus(true);
+                
+                // Subscribe to events
+                websocket.send(JSON.stringify({
+                    type: 'subscribe',
+                    events: ['user_connected', 'user_disconnected', 'auth_failure', 'statistics_update']
+                }));
+            };
+            
+            websocket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                handleWebSocketMessage(data);
+            };
+            
+            websocket.onclose = function(event) {
+                console.log('WebSocket disconnected');
+                updateConnectionStatus(false);
+                
+                // Attempt to reconnect after 5 seconds
+                setTimeout(() => {
+                    if (!websocket || websocket.readyState === WebSocket.CLOSED) {
+                        initWebSocket();
+                    }
+                }, 5000);
+            };
+            
+            websocket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                updateConnectionStatus(false);
+            };
+        }
+        
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connectionStatus');
+            if (statusElement) {
+                statusElement.textContent = connected ? 'Connected' : 'Disconnected';
+                statusElement.className = connected ? 'connected' : 'disconnected';
+            }
+        }
+        
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'user_connected':
+                    addNewConnectionEvent(data.data, 'connection');
+                    playNotificationSound();
+                    showNotification(`User ${data.data.username} connected`, 'success');
+                    break;
+                    
+                case 'user_disconnected':
+                    addNewConnectionEvent(data.data, 'disconnection');
+                    showNotification(`User ${data.data.username} disconnected`, 'info');
+                    break;
+                    
+                case 'auth_failure':
+                    addNewConnectionEvent(data.data, 'auth_failure');
+                    showNotification(`Auth failure: ${data.data.username}`, 'warning');
+                    break;
+                    
+                case 'statistics_update':
+                    updateStatisticsFromWebSocket(data.data);
+                    break;
+                    
+                case 'connection':
+                    console.log('WebSocket connection established:', data.message);
+                    break;
+                    
+                default:
+                    console.log('Unknown WebSocket message:', data);
+            }
+            
+            updateLastUpdateTime();
+        }
+        
+        function addNewConnectionEvent(eventData, type) {
+            const container = document.getElementById('recentEvents');
+            if (!container) return;
+            
+            const eventDiv = document.createElement('div');
+            eventDiv.className = `event-item ${type} new-event`;
+            
+            let description = '';
+            switch (type) {
+                case 'connection':
+                    description = `${eventData.username} connected from ${eventData.nasIp}`;
+                    break;
+                case 'disconnection':
+                    description = `${eventData.username} disconnected (${eventData.terminateCause || 'Unknown'})`;
+                    break;
+                case 'auth_failure':
+                    description = `Authentication failed for ${eventData.username} (${eventData.reason})`;
+                    break;
+            }
+            
+            eventDiv.innerHTML = `
+                <div class="event-time">${new Date().toLocaleString('id-ID')}</div>
+                <div class="event-description">
+                    <strong>${eventData.username}</strong><br>
+                    ${description}
+                </div>
+            `;
+            
+            // Insert at the beginning
+            container.insertBefore(eventDiv, container.firstChild);
+            
+            // Remove old events to keep only 10
+            const events = container.querySelectorAll('.event-item');
+            if (events.length > 10) {
+                for (let i = 10; i < events.length; i++) {
+                    events[i].remove();
+                }
+            }
+            
+            // Remove 'new-event' class after animation
+            setTimeout(() => {
+                eventDiv.classList.remove('new-event');
+            }, 3000);
+        }
+        
+        function updateStatisticsFromWebSocket(stats) {
+            if (previousStats) {
+                showStatChange('onlineUsersCount', stats.onlineUsers, previousStats.onlineUsers);
+                showStatChange('newConnectionsCount', stats.newConnectionsLastHour, previousStats.newConnectionsLastHour);
+                showStatChange('todaySessionsCount', stats.todaySessions, previousStats.todaySessions);
+            }
+            
+            // Update statistics with null checks
+            const elements = {
+                'onlineUsersCount': stats.onlineUsers,
+                'newConnectionsCount': stats.newConnectionsLastHour,
+                'newConnections5m': stats.newConnectionsLast5Min,
+                'longSessions': stats.longSessions,
+                'highUsageUsers': stats.highUsageUsers,
+                'currentUsage': stats.currentUsageMB + ' MB',
+                'todaySessionsCount': stats.todaySessions,
+                'todayUsage': stats.todayUsageMB + ' MB',
+                'authFailures': stats.authFailuresToday,
+                'peakHour': stats.peakHour !== null ? stats.peakHour + ':00' : 'N/A',
+                'uniqueUsers': stats.todayUniqueUsers,
+                'avgSession': stats.avgSessionMinutes + ' min'
+            };
+            
+            Object.keys(elements).forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.textContent = elements[elementId];
+                }
+            });
+            
+            // Update peak connections display
+            const peakConnectionsElement = document.querySelector('#peakHour').parentElement.querySelector('div:last-child');
+            if (peakConnectionsElement && stats.peakConnections !== undefined) {
+                peakConnectionsElement.innerHTML = `${stats.peakConnections} connections`;
+            }
+            
+            previousStats = stats;
+        }
+        
+        // Fungsi untuk menghitung unique users dari array users
+        function getUniqueUsersCount(users) {
+            const uniqueUsernames = new Set();
+            users.forEach(user => {
+                uniqueUsernames.add(user.username);
+            });
+            return uniqueUsernames.size;
+        }
+        
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            // Add to page
+            const container = document.getElementById('notifications') || createNotificationContainer();
+            container.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+        
+        function createNotificationContainer() {
+            const container = document.createElement('div');
+            container.id = 'notifications';
+            container.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                max-width: 400px;
+            `;
+            document.body.appendChild(container);
+            return container;
+        }
+        
+        function playNotificationSound() {
+            // Create audio context for notification sound
+            if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioCtx();
+                
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+        
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+        
+        function updateLastUpdateTime() {
+            const lastUpdateElement = document.getElementById('lastUpdate');
+            if (lastUpdateElement) {
+                lastUpdateElement.textContent = new Date().toLocaleTimeString('id-ID');
+            }
+        }
+        
+        function showStatChange(elementId, currentValue, previousValue) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            if (previousValue !== null && previousValue !== undefined) {
+                const change = currentValue - previousValue;
+                if (change !== 0) {
+                    const changeElement = element.parentElement.querySelector('.stat-change');
+                    if (changeElement) {
+                        changeElement.textContent = change > 0 ? `+${change}` : `${change}`;
+                        changeElement.className = `stat-change ${change > 0 ? 'positive' : 'negative'}`;
+                    }
+                }
+            }
+        }
+        
+        async function refreshData() {
+            try {
+                // Get dashboard data
+                const response = await fetch('/internal-api/active-users/dashboard');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    
+                    // Update statistics with change indicators
+                    if (data.statistics) {
+                        // Update unique users count berdasarkan data aktual
+                        if (data.onlineUsers) {
+                            const uniqueCount = getUniqueUsersCount(data.onlineUsers);
+                            data.statistics.onlineUsers = uniqueCount;
+                        }
+                        updateStatisticsFromWebSocket(data.statistics);
+                    }
+                    
+                    // Update online users table
+                    if (data.onlineUsers) {
+                        updateOnlineUsersTable(data.onlineUsers);
+                    }
+                    
+                    // Update recent events (only if not using WebSocket)
+                    if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                        if (data.recentEvents) {
+                            updateRecentEvents(data.recentEvents);
+                        }
+                    }
+                }
+                
+                // Get alerts
+                const alertsResponse = await fetch('/internal-api/active-users/alerts');
+                const alertsResult = await alertsResponse.json();
+                
+                if (alertsResult.success && alertsResult.data) {
+                    updateAlerts(alertsResult.data);
+                }
+                
+                updateLastUpdateTime();
+            } catch (error) {
+                console.error('Error refreshing data:', error);
+                // Show error notification to user
+                showNotification('Failed to refresh data. Please check your connection.', 'error');
+            }
+        }
+        
+        function updateOnlineUsersTable(users) {
+            const tbody = document.getElementById('onlineUsersTable');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Filter untuk menghilangkan username duplikat, ambil yang paling terbaru
+            const uniqueUsers = [];
+            const usernameMap = new Map();
+            
+            // Urutkan users berdasarkan acctstarttime (yang terbaru dulu)
+            const sortedUsers = users.sort((a, b) => {
+                const timeA = new Date(a.acctstarttime || 0);
+                const timeB = new Date(b.acctstarttime || 0);
+                return timeB - timeA; // Descending order (terbaru dulu)
+            });
+            
+            // Ambil hanya username unik (yang pertama/terbaru)
+            sortedUsers.forEach(user => {
+                if (!usernameMap.has(user.username)) {
+                    usernameMap.set(user.username, true);
+                    uniqueUsers.push(user);
+                }
+            });
+            
+            // Tampilkan users yang sudah difilter
+            uniqueUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <span class="status-indicator ${user.connection_age === 'new' ? 'status-warning' : 'status-online'}"></span>
+                        ${user.connection_age === 'new' ? 'New' : 'Online'}
+                    </td>
+                    <td>${user.username}</td>
+                    <td>${user.framedipaddress}</td>
+                    <td>${user.nasipaddress}</td>
+                    <td>${formatDuration(user.session_duration)}</td>
+                    <td>${user.total_data_mb} MB</td>
+                    <td>
+                        <a href="/active-users/${user.username}/sessions" class="btn btn-secondary btn-sm">Sessions</a>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateRecentEvents(events) {
+            const container = document.getElementById('recentEvents');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            events.slice(0, 10).forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.className = `event-item ${event.event_type}`;
+                eventDiv.innerHTML = `
+                    <div class="event-time">${new Date(event.event_time).toLocaleString('id-ID')}</div>
+                    <div class="event-description">
+                        <strong>${event.username}</strong><br>
+                        ${event.description}
+                        ${event.data_mb > 0 ? `<br><small>Data: ${event.data_mb} MB</small>` : ''}
+                    </div>
+                `;
+                container.appendChild(eventDiv);
+            });
+        }
+        
+        function updateAlerts(alerts) {
+            const container = document.getElementById('systemAlerts');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (alerts.length > 0) {
+                alerts.forEach(alert => {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = `alert-item ${alert.severity}`;
+                    alertDiv.innerHTML = `
+                        <div class="alert-time">${new Date(alert.timestamp).toLocaleString('id-ID')}</div>
+                        <div class="alert-message">
+                            <strong>${alert.username}</strong><br>
+                            ${alert.message}
+                        </div>
+                    `;
+                    container.appendChild(alertDiv);
+                });
+            } else {
+                const noAlertsDiv = document.createElement('div');
+                noAlertsDiv.className = 'alert-item info';
+                noAlertsDiv.innerHTML = '<div class="alert-message">No active alerts</div>';
+                container.appendChild(noAlertsDiv);
+            }
+        }
+        
+        // Auto refresh setup
+        document.getElementById('refreshInterval').addEventListener('change', function() {
+            const interval = parseInt(this.value);
+            
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+            
+            if (interval > 0) {
+                refreshInterval = setInterval(refreshData, interval);
+            }
+        });
+        
+        // Initialize everything when page loads
+        window.addEventListener('load', function() {
+            // Initialize WebSocket
+            initWebSocket();
+            
+            // Set initial auto refresh (but slower since WebSocket provides real-time updates)
+            const initialInterval = parseInt(document.getElementById('refreshInterval').value);
+            if (initialInterval > 0) {
+                refreshInterval = setInterval(refreshData, initialInterval);
+            }
+            
+            // Update last update time on page load
+            updateLastUpdateTime();
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (websocket) {
+                websocket.close();
+            }
+        });
+    </script>
+</body>
+</html>
