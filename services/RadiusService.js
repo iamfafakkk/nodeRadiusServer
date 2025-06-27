@@ -27,6 +27,7 @@ class RadiusService extends EventEmitter {
         USER_NAME: 1,
         USER_PASSWORD: 2,
         CHAP_PASSWORD: 3,
+        CHAP_CHALLENGE: 60,  // Add CHAP-Challenge attribute
         NAS_IP_ADDRESS: 4,
         NAS_PORT: 5,
         SERVICE_TYPE: 6,
@@ -185,11 +186,17 @@ class RadiusService extends EventEmitter {
             const username = parsed.attributes[RadiusService.ATTRIBUTES.USER_NAME];
             const encryptedPassword = parsed.attributes[RadiusService.ATTRIBUTES.USER_PASSWORD];
             const chapPassword = parsed.attributes[RadiusService.ATTRIBUTES.CHAP_PASSWORD];
+            const chapChallenge = parsed.attributes[RadiusService.ATTRIBUTES.CHAP_CHALLENGE];
             const vendorSpecific = parsed.attributes[RadiusService.ATTRIBUTES.VENDOR_SPECIFIC];
 
             logger.debug(`Received username: ${username}, encrypted password length: ${encryptedPassword ? encryptedPassword.length : 0}`);
             if (chapPassword) {
                 logger.debug(`CHAP password present, length: ${chapPassword.length}`);
+                logger.debug(`CHAP password hex: ${chapPassword.toString('hex')}`);
+            }
+            if (chapChallenge) {
+                logger.debug(`CHAP challenge present, length: ${chapChallenge.length}`);
+                logger.debug(`CHAP challenge hex: ${chapChallenge.toString('hex')}`);
             }
             if (vendorSpecific) {
                 logger.debug(`Vendor-specific attribute present, length: ${vendorSpecific.length}`);
@@ -203,19 +210,41 @@ class RadiusService extends EventEmitter {
                 return;
             }
 
-            // Decrypt password using the correct shared secret
-            const password = this.decryptPassword(encryptedPassword, parsed.authenticator, sharedSecret);
-            logger.debug(`Decrypted password: ${password}`);
+            let isValid = false;
 
-            if (!password) {
-                logger.warn('Failed to decrypt password');
+            // Determine authentication method and process accordingly
+            if (chapPassword) {
+                // CHAP Authentication
+                logger.info(`CHAP authentication attempt for user: ${username}`);
+                
+                // Get the challenge - use CHAP-Challenge attribute or Request Authenticator
+                const challenge = chapChallenge || parsed.authenticator;
+                isValid = await this.authenticateUserCHAP(username, chapPassword, challenge);
+                
+            } else if (encryptedPassword) {
+                // PAP Authentication
+                logger.info(`PAP authentication attempt for user: ${username}`);
+                
+                // Decrypt password using the correct shared secret
+                const password = this.decryptPassword(encryptedPassword, parsed.authenticator, sharedSecret);
+                logger.debug(`Decrypted password: ${password}`);
+
+                if (!password) {
+                    logger.warn('Failed to decrypt password');
+                    const rejectPacket = this.createAccessReject(parsed.identifier, parsed.authenticator, sharedSecret);
+                    this.authServer.send(rejectPacket, rinfo.port, rinfo.address);
+                    return;
+                }
+
+                // Authenticate user
+                isValid = await this.authenticateUser(username, password);
+                
+            } else {
+                logger.warn('No supported authentication method found');
                 const rejectPacket = this.createAccessReject(parsed.identifier, parsed.authenticator, sharedSecret);
                 this.authServer.send(rejectPacket, rinfo.port, rinfo.address);
                 return;
             }
-
-            // Authenticate user
-            const isValid = await this.authenticateUser(username, password);
             
             if (isValid) {
                 logger.info(`Authentication successful for user: ${username}`);
@@ -556,6 +585,63 @@ class RadiusService extends EventEmitter {
             
         } catch (error) {
             logger.error('Error authenticating user:', error);
+            return false;
+        }
+    }
+
+    async authenticateUserCHAP(username, chapPassword, challenge) {
+        try {
+            // Get user's stored cleartext password from database
+            const query = 'SELECT * FROM radcheck WHERE username = ? AND attribute = ?';
+            logger.debug(`CHAP authentication for user: ${username}`);
+            
+            const [rows] = await db.execute(query, [username, 'Cleartext-Password']);
+            logger.debug(`Query result: ${rows.length} rows found`);
+            
+            if (rows.length === 0) {
+                logger.debug('User not found in database');
+                return false;
+            }
+
+            const storedPassword = rows[0].value;
+            logger.debug(`Found stored password for user: ${username}`);
+
+            // CHAP-Password format: [ID][MD5-Hash]
+            // First byte is CHAP ID, followed by 16-byte MD5 hash
+            if (!Buffer.isBuffer(chapPassword) || chapPassword.length !== 17) {
+                logger.warn(`Invalid CHAP-Password format. Expected 17 bytes, got ${chapPassword.length}`);
+                return false;
+            }
+
+            const chapId = chapPassword[0];
+            const receivedHash = chapPassword.slice(1);
+
+            logger.debug(`CHAP ID: ${chapId}`);
+            logger.debug(`Received hash: ${receivedHash.toString('hex')}`);
+            logger.debug(`Challenge: ${challenge.toString('hex')}`);
+
+            // Calculate expected hash: MD5(CHAP-ID + Password + CHAP-Challenge)
+            const hash = crypto.createHash('md5');
+            hash.update(Buffer.from([chapId]));
+            hash.update(Buffer.from(storedPassword, 'utf8'));
+            hash.update(challenge);
+            const expectedHash = hash.digest();
+
+            logger.debug(`Expected hash: ${expectedHash.toString('hex')}`);
+
+            // Compare hashes
+            const isValid = expectedHash.equals(receivedHash);
+            
+            if (isValid) {
+                logger.info(`CHAP authentication successful for user: ${username}`);
+            } else {
+                logger.warn(`CHAP authentication failed for user: ${username} - hash mismatch`);
+            }
+
+            return isValid;
+            
+        } catch (error) {
+            logger.error('Error in CHAP authentication:', error);
             return false;
         }
     }

@@ -90,9 +90,35 @@ const receivedHash = chapPassword.slice(1);
 
 ## 🔧 Status Sekarang:
 
-✅ **MikroTik**: Dikonfigurasi untuk PAP authentication
-✅ **Server**: Support PAP authentication  
+✅ **MikroTik**: Dikonfigurasi untuk PAP authentication (bisa diupgrade ke CHAP)
+✅ **Server**: Support PAP dan CHAP authentication  
 ✅ **Database**: User "radius" / "radius" sudah ada
 ✅ **NAS Client**: Secret "mikrotik123" sudah benar
 
-**Sekarang coba test koneksi PPPoE lagi!**
+## 🚀 **UPDATE: CHAP SUPPORT ADDED!**
+
+Server Node.js sekarang sudah mendukung autentikasi CHAP! 
+
+### Cara Mengaktifkan CHAP:
+
+1. **Gunakan konfigurasi MikroTik baru:**
+   ```bash
+   # Import konfigurasi CHAP
+   /import file-name=MIKROTIK_CHAP_CONFIG.rsc
+   ```
+
+2. **Konfigurasi akan mengubah:**
+   - PPP Profile: `authentication=chap,mschap1,mschap2`
+   - PPPoE Server: `authentication=chap,mschap1,mschap2`
+
+3. **Server akan otomatis detect:**
+   - Jika paket berisi `CHAP-Password` → gunakan CHAP auth
+   - Jika paket berisi `User-Password` → gunakan PAP auth
+
+### Keuntungan CHAP:
+✅ **Password tidak pernah dikirim plain text**
+✅ **Challenge-response mechanism**  
+✅ **Anti replay attack**
+✅ **Lebih aman untuk production**
+
+**Sekarang test koneksi PPPoE dengan CHAP authentication!**

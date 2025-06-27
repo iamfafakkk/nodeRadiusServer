@@ -296,3 +296,7 @@
 {"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:43:02"}
 {"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-19 00:45:10"}
 {"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-19 00:45:10"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-20 02:56:10"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-20 02:56:23"}
+{"level":"info","message":"WebSocket client connected","service":"radius-auth","timestamp":"2025-06-20 02:56:46"}
+{"level":"info","message":"WebSocket client disconnected","service":"radius-auth","timestamp":"2025-06-20 02:57:36"}
