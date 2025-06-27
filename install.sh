@@ -17,12 +17,16 @@ NC='\033[0m' # No Color
 
 # Configuration
 APP_NAME="nodeRadiusServer"
-APP_DIR="$HOME/$APP_NAME"
 NODE_VERSION="18"
 DB_NAME="radius"
 DB_USER="radius"
 DB_PASS="radiusradius"  # Default password, will be changed during installation
 RADIUS_SECRET="mikrotik123"  # Default RADIUS secret
+
+# Dynamic variables (set in check_root function)
+APP_USER=""
+APP_DIR=""
+HOME_DIR=""
 
 # Functions
 print_status() {
@@ -48,9 +52,34 @@ print_chap() {
 # Check if running as root
 check_root() {
     if [[ $EUID -eq 0 ]]; then
-        print_error "This script should NOT be run as root for security reasons."
-        print_status "Please run as a regular user with sudo privileges."
-        exit 1
+        print_warning "Running as root detected."
+        print_status "Setting up for root installation with proper user management..."
+        
+        # Create a dedicated user for the RADIUS server if it doesn't exist
+        if ! id "radius" &>/dev/null; then
+            print_status "Creating dedicated 'radius' user for the service..."
+            useradd -r -s /bin/bash -d /opt/radius -m radius
+            usermod -aG sudo radius 2>/dev/null || true
+            print_success "User 'radius' created"
+        fi
+        
+        # Set variables for root installation
+        APP_USER="radius"
+        APP_DIR="/opt/radius/$APP_NAME"
+        HOME_DIR="/opt/radius"
+        
+        # Create necessary directories with proper ownership
+        mkdir -p "$APP_DIR"
+        mkdir -p "$HOME_DIR"
+        chown -R radius:radius /opt/radius
+        
+        print_success "Root installation configured with dedicated user"
+    else
+        # Regular user installation
+        APP_USER="$USER"
+        APP_DIR="$HOME/$APP_NAME"
+        HOME_DIR="$HOME"
+        print_status "Running as regular user: $USER"
     fi
 }
 
@@ -67,6 +96,11 @@ check_ubuntu() {
 
 # Check if user has sudo privileges
 check_sudo() {
+    if [[ $EUID -eq 0 ]]; then
+        print_status "Running as root - sudo check skipped"
+        return 0
+    fi
+    
     if ! sudo -n true 2>/dev/null; then
         print_status "Testing sudo access..."
         sudo -v || {
@@ -80,7 +114,11 @@ check_sudo() {
 # Update system packages
 update_system() {
     print_status "Updating system packages..."
-    sudo apt update && sudo apt upgrade -y
+    if [[ $EUID -eq 0 ]]; then
+        apt update && apt upgrade -y
+    else
+        sudo apt update && sudo apt upgrade -y
+    fi
     print_success "System packages updated"
 }
 
@@ -89,7 +127,7 @@ install_system_packages() {
     print_status "Installing required system packages..."
     
     # Essential packages
-    sudo apt install -y \
+    INSTALL_CMD="apt install -y \
         curl \
         wget \
         git \
@@ -107,7 +145,13 @@ install_system_packages() {
         tree \
         net-tools \
         tcpdump \
-        nmap
+        nmap"
+    
+    if [[ $EUID -eq 0 ]]; then
+        $INSTALL_CMD
+    else
+        sudo $INSTALL_CMD
+    fi
     
     print_success "System packages installed"
 }
@@ -117,13 +161,19 @@ install_nodejs() {
     print_status "Installing Node.js $NODE_VERSION..."
     
     # Remove any existing Node.js
-    sudo apt remove -y nodejs npm 2>/dev/null || true
-    
-    # Add NodeSource repository
-    curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | sudo -E bash -
-    
-    # Install Node.js
-    sudo apt install -y nodejs
+    if [[ $EUID -eq 0 ]]; then
+        apt remove -y nodejs npm 2>/dev/null || true
+        # Add NodeSource repository
+        curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -
+        # Install Node.js
+        apt install -y nodejs
+    else
+        sudo apt remove -y nodejs npm 2>/dev/null || true
+        # Add NodeSource repository
+        curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | sudo -E bash -
+        # Install Node.js
+        sudo apt install -y nodejs
+    fi
     
     # Verify installation
     NODE_VER=$(node --version)
@@ -138,11 +188,17 @@ install_database() {
     print_status "Installing MariaDB database server..."
     
     # Install MariaDB
-    sudo apt install -y mariadb-server mariadb-client
-    
-    # Start and enable MariaDB
-    sudo systemctl start mariadb
-    sudo systemctl enable mariadb
+    if [[ $EUID -eq 0 ]]; then
+        apt install -y mariadb-server mariadb-client
+        # Start and enable MariaDB
+        systemctl start mariadb
+        systemctl enable mariadb
+    else
+        sudo apt install -y mariadb-server mariadb-client
+        # Start and enable MariaDB
+        sudo systemctl start mariadb
+        sudo systemctl enable mariadb
+    fi
     
     # Secure MariaDB installation (automated)
     print_status "Securing MariaDB installation..."
@@ -150,27 +206,37 @@ install_database() {
     # Set root password
     ROOT_PASS=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
     
-    sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$ROOT_PASS';" 2>/dev/null || \
-    sudo mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$ROOT_PASS');"
-    sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
-    sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
-    sudo mysql -e "DROP DATABASE IF EXISTS test;"
-    sudo mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
-    sudo mysql -e "FLUSH PRIVILEGES;"
+    if [[ $EUID -eq 0 ]]; then
+        mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$ROOT_PASS';" 2>/dev/null || \
+        mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$ROOT_PASS');"
+        mysql -e "DELETE FROM mysql.user WHERE User='';"
+        mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+        mysql -e "DROP DATABASE IF EXISTS test;"
+        mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+        mysql -e "FLUSH PRIVILEGES;"
+    else
+        sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$ROOT_PASS';" 2>/dev/null || \
+        sudo mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$ROOT_PASS');"
+        sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
+        sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');"
+        sudo mysql -e "DROP DATABASE IF EXISTS test;"
+        sudo mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
+        sudo mysql -e "FLUSH PRIVILEGES;"
+    fi
     
     # Save root password
-    echo "$ROOT_PASS" > "$HOME/.mysql_root_password"
-    chmod 600 "$HOME/.mysql_root_password"
+    echo "$ROOT_PASS" > "$HOME_DIR/.mysql_root_password"
+    chmod 600 "$HOME_DIR/.mysql_root_password"
     
     print_success "MariaDB installed and secured"
-    print_status "Root password saved to: $HOME/.mysql_root_password"
+    print_status "Root password saved to: $HOME_DIR/.mysql_root_password"
 }
 
 # Setup database for RADIUS
 setup_database() {
     print_status "Setting up RADIUS database..."
     
-    ROOT_PASS=$(cat "$HOME/.mysql_root_password")
+    ROOT_PASS=$(cat "$HOME_DIR/.mysql_root_password")
     
     # Generate secure database password
     NEW_DB_PASS=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
@@ -186,26 +252,32 @@ setup_database() {
     DB_PASS="$NEW_DB_PASS"
     
     # Save database credentials
-    cat > "$HOME/.radius_db_config" << EOF
+    cat > "$HOME_DIR/.radius_db_config" << EOF
 DB_HOST=localhost
 DB_NAME=$DB_NAME
 DB_USER=$DB_USER
 DB_PASS=$DB_PASS
 EOF
-    chmod 600 "$HOME/.radius_db_config"
+    chmod 600 "$HOME_DIR/.radius_db_config"
     
     print_success "Database setup completed"
-    print_status "Database credentials saved to: $HOME/.radius_db_config"
+    print_status "Database credentials saved to: $HOME_DIR/.radius_db_config"
 }
 
 # Install PM2 for process management
 install_pm2() {
     print_status "Installing PM2 process manager..."
     
-    npm install -g pm2
-    
-    # Setup PM2 startup script
-    pm2 startup | grep -E "sudo.*pm2" | bash || true
+    if [[ $EUID -eq 0 ]]; then
+        # Install PM2 as the dedicated user
+        su - "$APP_USER" -c "npm install -g pm2"
+        # Setup PM2 startup script
+        su - "$APP_USER" -c "pm2 startup" | grep -E "sudo.*pm2" | bash || true
+    else
+        npm install -g pm2
+        # Setup PM2 startup script
+        pm2 startup | grep -E "sudo.*pm2" | bash || true
+    fi
     
     print_success "PM2 installed"
 }
@@ -223,6 +295,11 @@ setup_application() {
         print_status "Copying application files..."
         cp -r ../* . 2>/dev/null || true
         cp -r ../.[^.]* . 2>/dev/null || true
+        
+        # Set proper ownership if running as root
+        if [[ $EUID -eq 0 ]]; then
+            chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+        fi
     else
         print_warning "Application files not found. You'll need to upload them manually to $APP_DIR"
     fi
@@ -237,7 +314,11 @@ install_dependencies() {
     cd "$APP_DIR"
     
     if [[ -f "package.json" ]]; then
-        npm install --production
+        if [[ $EUID -eq 0 ]]; then
+            su - "$APP_USER" -c "cd '$APP_DIR' && npm install --production"
+        else
+            npm install --production
+        fi
         print_success "Dependencies installed"
     else
         print_warning "package.json not found. Skipping dependency installation."
@@ -251,7 +332,7 @@ setup_environment() {
     cd "$APP_DIR"
     
     # Load database credentials
-    source "$HOME/.radius_db_config"
+    source "$HOME_DIR/.radius_db_config"
     
     # Generate secure RADIUS secret
     SECURE_RADIUS_SECRET=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-32)
@@ -297,6 +378,11 @@ EOF
     chmod 644 .env
     chmod 755 logs
     chmod 755 logs/auth
+    
+    # Set ownership if running as root
+    if [[ $EUID -eq 0 ]]; then
+        chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+    fi
 }
 
 # Initialize database schema
@@ -306,7 +392,7 @@ init_database_schema() {
     cd "$APP_DIR"
     
     if [[ -f "database/setup.sql" ]]; then
-        source "$HOME/.radius_db_config"
+        source "$HOME_DIR/.radius_db_config"
         mysql -u "$DB_USER" -p"$DB_PASS" "$DB_NAME" < database/setup.sql
         print_success "Database schema initialized"
         print_chap "Database is ready for both PAP and CHAP authentication"
@@ -321,21 +407,39 @@ setup_firewall() {
     
     # Check if UFW is available
     if command -v ufw >/dev/null 2>&1; then
-        # Enable UFW if not already enabled
-        sudo ufw --force enable
-        
-        # Allow SSH (important!)
-        sudo ufw allow ssh
-        
-        # Allow RADIUS ports
-        sudo ufw allow 1812/udp comment 'RADIUS Authentication (PAP/CHAP)'
-        sudo ufw allow 1813/udp comment 'RADIUS Accounting'
-        
-        # Allow web interface
-        sudo ufw allow 3000/tcp comment 'RADIUS Web Management Interface'
-        
-        # Reload firewall
-        sudo ufw reload
+        if [[ $EUID -eq 0 ]]; then
+            # Enable UFW if not already enabled
+            ufw --force enable
+            
+            # Allow SSH (important!)
+            ufw allow ssh
+            
+            # Allow RADIUS ports
+            ufw allow 1812/udp comment 'RADIUS Authentication (PAP/CHAP)'
+            ufw allow 1813/udp comment 'RADIUS Accounting'
+            
+            # Allow web interface
+            ufw allow 3000/tcp comment 'RADIUS Web Management Interface'
+            
+            # Reload firewall
+            ufw reload
+        else
+            # Enable UFW if not already enabled
+            sudo ufw --force enable
+            
+            # Allow SSH (important!)
+            sudo ufw allow ssh
+            
+            # Allow RADIUS ports
+            sudo ufw allow 1812/udp comment 'RADIUS Authentication (PAP/CHAP)'
+            sudo ufw allow 1813/udp comment 'RADIUS Accounting'
+            
+            # Allow web interface
+            sudo ufw allow 3000/tcp comment 'RADIUS Web Management Interface'
+            
+            # Reload firewall
+            sudo ufw reload
+        fi
         
         print_success "Firewall configured for RADIUS server"
     else
@@ -401,15 +505,14 @@ EOF
 setup_systemd_service() {
     print_status "Creating systemd service..."
     
-    sudo tee /etc/systemd/system/radius-server.service > /dev/null << EOF
-[Unit]
+    SERVICE_CONTENT="[Unit]
 Description=Node.js RADIUS Server with PAP/CHAP Support
 After=network.target mysql.service mariadb.service
 Requires=mysql.service
 
 [Service]
 Type=simple
-User=$USER
+User=$APP_USER
 WorkingDirectory=$APP_DIR
 Environment=NODE_ENV=production
 Environment=PATH=/usr/bin:/usr/local/bin
@@ -430,12 +533,19 @@ ProtectHome=true
 ReadWritePaths=$APP_DIR
 
 [Install]
-WantedBy=multi-user.target
-EOF
+WantedBy=multi-user.target"
     
-    # Reload systemd and enable service
-    sudo systemctl daemon-reload
-    sudo systemctl enable radius-server.service
+    if [[ $EUID -eq 0 ]]; then
+        echo "$SERVICE_CONTENT" > /etc/systemd/system/radius-server.service
+        # Reload systemd and enable service
+        systemctl daemon-reload
+        systemctl enable radius-server.service
+    else
+        echo "$SERVICE_CONTENT" | sudo tee /etc/systemd/system/radius-server.service > /dev/null
+        # Reload systemd and enable service
+        sudo systemctl daemon-reload
+        sudo systemctl enable radius-server.service
+    fi
     
     print_success "Systemd service created and enabled"
 }
@@ -445,7 +555,7 @@ create_management_scripts() {
     print_status "Creating enhanced management scripts..."
     
     # Start script with CHAP support info
-    cat > "$HOME/start-radius.sh" << 'EOF'
+    cat > "$HOME_DIR/start-radius.sh" << 'EOF'
 #!/bin/bash
 echo "=== Starting RADIUS Server with PAP/CHAP Support ==="
 cd ~/nodeRadiusServer
@@ -478,7 +588,7 @@ echo "🌐 Web Interface: http://localhost:3000"
 EOF
     
     # Stop script
-    cat > "$HOME/stop-radius.sh" << 'EOF'
+    cat > "$HOME_DIR/stop-radius.sh" << 'EOF'
 #!/bin/bash
 echo "=== Stopping RADIUS Server ==="
 pm2 stop radius-server
@@ -486,7 +596,7 @@ echo "✅ RADIUS Server stopped"
 EOF
     
     # Status script with CHAP information
-    cat > "$HOME/status-radius.sh" << 'EOF'
+    cat > "$HOME_DIR/status-radius.sh" << 'EOF'
 #!/bin/bash
 echo "=== RADIUS Server Status ==="
 echo ""
@@ -521,7 +631,7 @@ sudo netstat -tlnp | grep :3000 || echo "Not listening"
 EOF
     
     # Update script with CHAP awareness
-    cat > "$HOME/update-radius.sh" << 'EOF'
+    cat > "$HOME_DIR/update-radius.sh" << 'EOF'
 #!/bin/bash
 echo "=== Updating RADIUS Server ==="
 cd ~/nodeRadiusServer
@@ -552,7 +662,7 @@ pm2 status
 EOF
     
     # CHAP configuration script
-    cat > "$HOME/configure-chap.sh" << 'EOF'
+    cat > "$HOME_DIR/configure-chap.sh" << 'EOF'
 #!/bin/bash
 echo "=== CHAP Authentication Configuration Helper ==="
 echo ""
@@ -584,11 +694,17 @@ fi
 EOF
     
     # Make scripts executable
-    chmod +x "$HOME"/*-radius.sh
-    chmod +x "$HOME/configure-chap.sh"
+    chmod +x "$HOME_DIR"/*-radius.sh
+    chmod +x "$HOME_DIR/configure-chap.sh"
+    
+    # Set ownership if running as root
+    if [[ $EUID -eq 0 ]]; then
+        chown "$APP_USER:$APP_USER" "$HOME_DIR"/*-radius.sh
+        chown "$APP_USER:$APP_USER" "$HOME_DIR/configure-chap.sh"
+    fi
     
     print_success "Enhanced management scripts created"
-    print_chap "CHAP configuration helper script created: ~/configure-chap.sh"
+    print_chap "CHAP configuration helper script created: $HOME_DIR/configure-chap.sh"
 }
 
 # Display installation summary with CHAP information
@@ -597,9 +713,10 @@ display_summary() {
     echo ""
     echo "=== 🎉 RADIUS Server Installation Summary ==="
     echo "Application Directory: $APP_DIR"
+    echo "Application User: $APP_USER"
     echo "Database Name: $DB_NAME"
     echo "Database User: $DB_USER"
-    echo "Database Password: (saved in $HOME/.radius_db_config)"
+    echo "Database Password: (saved in $HOME_DIR/.radius_db_config)"
     echo ""
     echo "=== 🔐 Authentication Methods ==="
     print_chap "✅ PAP Authentication: Supported"
@@ -607,11 +724,11 @@ display_summary() {
     echo "🔧 Auto-detection: Server automatically detects auth method"
     echo ""
     echo "=== 📋 Management Commands ==="
-    echo "Start server: ~/start-radius.sh"
-    echo "Stop server: ~/stop-radius.sh"
-    echo "Check status: ~/status-radius.sh"
-    echo "Update server: ~/update-radius.sh"
-    echo "CHAP setup help: ~/configure-chap.sh"
+    echo "Start server: $HOME_DIR/start-radius.sh"
+    echo "Stop server: $HOME_DIR/stop-radius.sh"
+    echo "Check status: $HOME_DIR/status-radius.sh"
+    echo "Update server: $HOME_DIR/update-radius.sh"
+    echo "CHAP setup help: $HOME_DIR/configure-chap.sh"
     echo ""
     echo "=== 🔧 Alternative System Service ==="
     echo "Start: sudo systemctl start radius-server"
@@ -620,8 +737,8 @@ display_summary() {
     echo ""
     echo "=== 📄 Configuration Files ==="
     echo "Environment: $APP_DIR/.env"
-    echo "Database Config: $HOME/.radius_db_config"
-    echo "MySQL Root Password: $HOME/.mysql_root_password"
+    echo "Database Config: $HOME_DIR/.radius_db_config"
+    echo "MySQL Root Password: $HOME_DIR/.mysql_root_password"
     echo ""
     echo "=== 📡 Network Ports ==="
     echo "RADIUS Authentication: 1812/udp (PAP/CHAP)"
@@ -642,8 +759,8 @@ display_summary() {
     print_warning "6. Monitor authentication logs regularly"
     echo ""
     echo "=== 🚀 Next Steps ==="
-    echo "1. Start the server: ~/start-radius.sh"
-    echo "2. Configure MikroTik with CHAP: ~/configure-chap.sh"
+    echo "1. Start the server: $HOME_DIR/start-radius.sh"
+    echo "2. Configure MikroTik with CHAP: $HOME_DIR/configure-chap.sh"
     echo "3. Test PPPoE connection with username: radius, password: radius"
     echo "4. Monitor logs: tail -f $APP_DIR/logs/auth.log"
     echo "5. Access web interface: http://your-server-ip:3000"
@@ -687,7 +804,7 @@ main() {
     
     print_success "🎉 Installation script completed!"
     print_chap "🔐 RADIUS Server ready with PAP & CHAP authentication!"
-    print_status "Start the server with: ~/start-radius.sh"
+    print_status "Start the server with: $HOME_DIR/start-radius.sh"
     echo ""
 }
 
