@@ -58,7 +58,7 @@ class RadiusUserController {
   // Proses tambah RADIUS user
   async addRadiusUser(req, res) {
     try {
-      const { username, password, confirmPassword, groupname } = req.body;
+      const { username, password, confirmPassword, groupname, mikrotikGroup } = req.body;
 
       // Validasi input
       if (!username || !password || !confirmPassword) {
@@ -87,7 +87,8 @@ class RadiusUserController {
       const userData = {
         username,
         password,
-        groupname: groupname || 'default'
+        groupname: groupname || 'default',
+        mikrotikGroup: mikrotikGroup || null
       };
 
       await RadiusUserModel.createUser(userData);
@@ -108,20 +109,28 @@ class RadiusUserController {
       const userData = await RadiusUserModel.getUserByUsername(username);
       const groups = await RadiusUserModel.getUserGroups();
       
-      if (!userData || userData.length === 0) {
+      if (!userData || (!userData.radcheck || userData.radcheck.length === 0)) {
         req.flash('error', 'User tidak ditemukan');
         return res.redirect('/radius-users');
       }
 
       // Extract password from radcheck data
-      const passwordEntry = userData.find(entry => entry.attribute === 'Cleartext-Password');
+      const passwordEntry = userData.radcheck.find(entry => entry.attribute === 'Cleartext-Password');
+      
+      // Extract Mikrotik-Group or Filter-Id from radreply data (MikroTik profile assignment)
+      let mikrotikGroupEntry = userData.radreply.find(entry => entry.attribute === 'Mikrotik-Group');
+      if (!mikrotikGroupEntry) {
+        // Fallback to Filter-Id for backward compatibility
+        mikrotikGroupEntry = userData.radreply.find(entry => entry.attribute === 'Filter-Id');
+      }
       
       res.render('edit-radius-user', {
         title: 'Edit RADIUS User',
         user: req.session.user,
         radiusUser: {
           username,
-          password: passwordEntry ? passwordEntry.value : ''
+          password: passwordEntry ? passwordEntry.value : '',
+          mikrotikGroup: mikrotikGroupEntry ? mikrotikGroupEntry.value : ''
         },
         groups,
         error: req.flash('error'),
@@ -138,7 +147,7 @@ class RadiusUserController {
   async editRadiusUser(req, res) {
     try {
       const username = req.params.username;
-      const { password, confirmPassword } = req.body;
+      const { password, confirmPassword, mikrotikGroup } = req.body;
 
       // Validasi input jika password diubah
       if (password) {
@@ -151,10 +160,19 @@ class RadiusUserController {
           req.flash('error', 'Password minimal 4 karakter');
           return res.redirect(`/radius-users/${username}/edit`);
         }
-
-        // Update password
-        await RadiusUserModel.updateUser(username, { password });
       }
+
+      // Prepare update data
+      const updateData = {};
+      if (password) {
+        updateData.password = password;
+      }
+      if (mikrotikGroup !== undefined) {
+        updateData.mikrotikGroup = mikrotikGroup;
+      }
+
+      // Update user
+      await RadiusUserModel.updateUser(username, updateData);
 
       req.flash('success', 'RADIUS user berhasil diperbarui');
       res.redirect('/radius-users');

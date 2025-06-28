@@ -68,11 +68,24 @@ class RadiusUserModel {
   async getUserByUsername(username) {
     try {
       const connection = await this.getConnection();
-      const [rows] = await connection.execute(
+      
+      // Get radcheck data
+      const [radcheckRows] = await connection.execute(
         'SELECT * FROM radcheck WHERE username = ?',
         [username]
       );
-      return rows;
+      
+      // Get radreply data
+      const [radreplyRows] = await connection.execute(
+        'SELECT * FROM radreply WHERE username = ?',
+        [username]
+      );
+      
+      // Return combined data
+      return {
+        radcheck: radcheckRows,
+        radreply: radreplyRows
+      };
     } catch (error) {
       console.error('Error getting RADIUS user:', error);
       throw error;
@@ -93,6 +106,21 @@ class RadiusUserModel {
           'INSERT INTO radcheck (username, attribute, op, value) VALUES (?, ?, ?, ?)',
           [userData.username, 'Cleartext-Password', ':=', userData.password]
         );
+
+        // Insert Mikrotik-Group VSA or Filter-Id radreply attribute if provided (for MikroTik profile assignment)
+        if (userData.mikrotikGroup) {
+          // Use Mikrotik-Group VSA (preferred method for newer MikroTik routers)
+          await connection.execute(
+            'INSERT INTO radreply (username, attribute, op, value) VALUES (?, ?, ?, ?)',
+            [userData.username, 'Mikrotik-Group', ':=', userData.mikrotikGroup]
+          );
+          
+          // Also insert Filter-Id for backward compatibility
+          await connection.execute(
+            'INSERT INTO radreply (username, attribute, op, value) VALUES (?, ?, ?, ?)',
+            [userData.username, 'Filter-Id', ':=', userData.mikrotikGroup]
+          );
+        }
 
         // Insert additional attributes if provided
         if (userData.attributes && userData.attributes.length > 0) {
@@ -129,15 +157,75 @@ class RadiusUserModel {
     try {
       const connection = await this.getConnection();
       
-      // Update password if provided
-      if (userData.password) {
-        await connection.execute(
-          'UPDATE radcheck SET value = ?, updated_at = CURRENT_TIMESTAMP WHERE username = ? AND attribute = ?',
-          [userData.password, username, 'Cleartext-Password']
-        );
-      }
+      // Start transaction
+      await connection.beginTransaction();
+      
+      try {
+        // Update password if provided
+        if (userData.password) {
+          await connection.execute(
+            'UPDATE radcheck SET value = ?, updated_at = CURRENT_TIMESTAMP WHERE username = ? AND attribute = ?',
+            [userData.password, username, 'Cleartext-Password']
+          );
+        }
 
-      return true;
+        // Update or insert Mikrotik-Group and Filter-Id if provided
+        if (userData.mikrotikGroup !== undefined) {
+          if (userData.mikrotikGroup === '' || userData.mikrotikGroup === null) {
+            // Remove both Mikrotik-Group and Filter-Id if empty
+            await connection.execute(
+              'DELETE FROM radreply WHERE username = ? AND attribute IN (?, ?)',
+              [username, 'Mikrotik-Group', 'Filter-Id']
+            );
+          } else {
+            // Handle Mikrotik-Group VSA
+            const [existingMikrotikRows] = await connection.execute(
+              'SELECT id FROM radreply WHERE username = ? AND attribute = ?',
+              [username, 'Mikrotik-Group']
+            );
+
+            if (existingMikrotikRows.length > 0) {
+              // Update existing Mikrotik-Group
+              await connection.execute(
+                'UPDATE radreply SET value = ? WHERE username = ? AND attribute = ?',
+                [userData.mikrotikGroup, username, 'Mikrotik-Group']
+              );
+            } else {
+              // Insert new Mikrotik-Group
+              await connection.execute(
+                'INSERT INTO radreply (username, attribute, op, value) VALUES (?, ?, ?, ?)',
+                [username, 'Mikrotik-Group', ':=', userData.mikrotikGroup]
+              );
+            }
+
+            // Handle Filter-Id for backward compatibility
+            const [existingFilterRows] = await connection.execute(
+              'SELECT id FROM radreply WHERE username = ? AND attribute = ?',
+              [username, 'Filter-Id']
+            );
+
+            if (existingFilterRows.length > 0) {
+              // Update existing Filter-Id
+              await connection.execute(
+                'UPDATE radreply SET value = ? WHERE username = ? AND attribute = ?',
+                [userData.mikrotikGroup, username, 'Filter-Id']
+              );
+            } else {
+              // Insert new Filter-Id
+              await connection.execute(
+                'INSERT INTO radreply (username, attribute, op, value) VALUES (?, ?, ?, ?)',
+                [username, 'Filter-Id', ':=', userData.mikrotikGroup]
+              );
+            }
+          }
+        }
+
+        await connection.commit();
+        return true;
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      }
     } catch (error) {
       console.error('Error updating RADIUS user:', error);
       throw error;

@@ -284,6 +284,7 @@ class GroupModel {
         'Framed-IP-Netmask',
         'Framed-Routing',
         'Filter-Id',
+        'Mikrotik-Group',
         'Framed-MTU',
         'Framed-Compression',
         'Login-IP-Host',
@@ -405,6 +406,7 @@ class GroupModel {
         replyAttributes: [
           { attribute: 'Service-Type', op: ':=', value: 'Framed-User' },
           { attribute: 'Framed-Protocol', op: ':=', value: 'PPP' },
+          { attribute: 'Mikrotik-Group', op: ':=', value: 'premium' },
           { attribute: 'Filter-Id', op: ':=', value: 'premium' }
         ]
       }

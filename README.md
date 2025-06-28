@@ -4,7 +4,7 @@ RADIUS Server sederhana yang dibangun dengan Node.js untuk autentikasi PPPoE dar
 
 ## ✨ Fitur
 
-- 🔐 Autentikasi RADIUS (PAP/CHAP)
+- 🔐 Autentikasi RADIUS (PAP/CHAP/MS-CHAP v1/MS-CHAP v2)
 - 📊 Accounting RADIUS  
 - 🖥️ Support multi NAS (MikroTik)
 - 🚀 Deployment dengan PM2
@@ -79,6 +79,17 @@ npm run dev
 npm run pm2:start
 ```
 
+## 🔐 Authentication Methods
+
+Server ini mendukung empat metode autentikasi RADIUS:
+
+- **PAP (Password Authentication Protocol)**: Autentikasi plaintext sederhana
+- **CHAP (Challenge Handshake Authentication Protocol)**: Autentikasi berbasis challenge-response dengan MD5
+- **MS-CHAP v1**: Microsoft Challenge Handshake Authentication Protocol versi 1
+- **MS-CHAP v2**: Microsoft Challenge Handshake Authentication Protocol versi 2
+
+Server secara otomatis mendeteksi metode autentikasi yang digunakan oleh client dan memproses sesuai protokol yang tepat.
+
 ## 📡 Konfigurasi MikroTik
 
 ### 1. Tambah RADIUS Client
@@ -106,7 +117,7 @@ add name="radius-pool" ranges=192.168.100.10-192.168.100.100
 
 ```bash
 /interface pppoe-server server
-add service-name="internet" interface=ether2 default-profile=radius-profile authentication=pap,chap
+add service-name="internet" interface=ether2 default-profile=radius-profile authentication=pap,chap,mschap1,mschap2
 ```
 
 ## 🌐 REST API Documentation

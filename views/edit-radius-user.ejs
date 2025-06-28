@@ -44,6 +44,16 @@
                                placeholder="Ulangi password baru">
                     </div>
                     
+                    <div class="form-group">
+                        <label for="mikrotikGroup" class="form-label">Mikrotik Group (Opsional)</label>
+                        <input type="text" id="mikrotikGroup" name="mikrotikGroup" class="form-input" 
+                               value="<%= radiusUser.mikrotikGroup %>"
+                               placeholder="Contoh: default, premium, unlimited">
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Nama PPP profile yang akan diterapkan di Mikrotik. Sistem akan mengirim Mikrotik-Group VSA (modern) dan Filter-Id (backward compatibility). Profile harus sudah dibuat di Mikrotik. Kosongkan untuk menghapus.
+                        </small>
+                    </div>
+                    
                     <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                         <button type="submit" class="btn btn-success">Update RADIUS User</button>
                         <a href="/radius-users" class="btn btn-secondary">Batal</a>
@@ -56,6 +66,7 @@
                         <li>Perubahan password akan langsung berlaku</li>
                         <li>User yang sedang online mungkin perlu login ulang</li>
                         <li>Pastikan menggunakan password yang kuat</li>
+                        <li>Perubahan Mikrotik Group akan mengirim VSA "Mikrotik-Group" dan "Filter-Id" untuk assign PPP profile. Berlaku pada koneksi berikutnya</li>
                     </ul>
                 </div>
             </div>

@@ -60,6 +60,15 @@
                         </small>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="mikrotikGroup" class="form-label">Mikrotik Group (Opsional)</label>
+                        <input type="text" id="mikrotikGroup" name="mikrotikGroup" class="form-input" 
+                               placeholder="Contoh: vip, reguler, default">
+                        <small style="color: #6b7280; font-size: 0.875rem;">
+                            Nama PPP profile yang akan diterapkan di Mikrotik. Sistem akan mengirim Mikrotik-Group VSA (modern) dan Filter-Id (backward compatibility). Profile harus sudah dibuat di Mikrotik.
+                        </small>
+                    </div>
+                    
                     <div style="display: flex; gap: 1rem; margin-top: 2rem;">
                         <button type="submit" class="btn btn-success">Tambah RADIUS User</button>
                         <a href="/radius-users" class="btn btn-secondary">Batal</a>
@@ -73,6 +82,7 @@
                         <li>Password akan disimpan sebagai cleartext untuk kompatibilitas</li>
                         <li>User ini dapat digunakan untuk autentikasi di MikroTik atau perangkat lain</li>
                         <li>Group menentukan bandwidth dan batasan akses</li>
+                        <li>Mikrotik Group akan mengirim VSA "Mikrotik-Group" dan "Filter-Id" ke router untuk assign PPP profile otomatis. Profile harus sudah dibuat di Mikrotik.</li>
                     </ul>
                 </div>
             </div>
